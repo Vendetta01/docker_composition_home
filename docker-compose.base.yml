@@ -1,0 +1,40 @@
+version: '3.4'
+
+networks:
+    podewitz_local_net:
+        ipam:
+            config:
+                - subnet: 172.25.0.0/16
+
+volumes:
+    etcd-data:
+        name: etcd-data
+    openldap-config:
+        name: openldap-config
+    openldap-data:
+        name: openldap-data
+    paperless-data:
+        name: paperless-data
+    paperless-media:
+        name: paperless-media
+
+secrets:
+    etcd_client_ssl_key:
+        file: ./SSLCertificates/local/podewitz/etcd/etcd.podewitz.local.key
+    etcd_client_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/etcd/etcd.podewitz.local.crt
+    ldap_ssl_key:
+        file: ./SSLCertificates/local/podewitz/ldap/ldap.podewitz.local.key
+    ldap_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/ldap/ldap.podewitz.local.crt
+    lum_ssl_key:
+        file: ./SSLCertificates/local/podewitz/lum/lum.podewitz.local.key
+    lum_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/lum/lum.podewitz.local.crt
+    paperless_ssl_key:
+        file: ./SSLCertificates/local/podewitz/paperless/paperless.podewitz.local.key
+    paperless_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/paperless/paperless.podewitz.local.crt
+    root_ca_crt:
+        file: ./SSLCertificates/rootCA.crt
+

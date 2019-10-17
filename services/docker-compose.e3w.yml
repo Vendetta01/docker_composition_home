@@ -1,0 +1,39 @@
+version: '3.4'
+services:
+    e3w:
+        image: e3w
+        build: ./e3w-docker
+        container_name: e3w
+        restart: unless-stopped
+        hostname: e3w.${DOMAINNAME}
+        #healthcheck:
+        #ports:
+            #- "8081:8080"
+        #cap_drop:
+            #- ALL
+        secrets:
+            - source: etcd_client_ssl_key
+              target: /etc/ssl/etcd_client.key
+            - source: etcd_client_ssl_crt
+              target: /etc/ssl/etcd_client.crt
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+        environment:
+            - VIRTUAL_HOST=e3w.${DOMAINNAME}
+            - VIRTUAL_PORT=8080
+            - E3W_AUTH=false
+            - E3W_ADDR=etcd.podewitz.local:2379
+            - E3W_ROOT_KEY=/conf
+            - E3W_DIR_VALUE=${ETCD_E3CH_DIR_VAL}
+            #- E3W_DIR_VALUE=test_dir_val
+            - SECRET_SSL_KEY=/etc/ssl/etcd_client.key
+            - SECRET_SSL_CRT=/etc/ssl/etcd_client.crt
+            - SECRET_ROOT_CRT=/etc/ssl/root_ca.crt
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - e3w.${DOMAINNAME}
+                ipv4_address: 172.25.0.3
+        depends_on:
+            - etcd
+

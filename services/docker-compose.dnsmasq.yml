@@ -1,0 +1,39 @@
+version: '3.4'
+services:
+    dnsmasq:
+        image: dnsmasq
+        build: ./dnsmasq-docker
+        container_name: dnsmasq
+        restart: unless-stopped
+        hostname: dnsmasq.${DOMAINNAME}
+        #healthcheck:
+        cap_add:
+            - NET_ADMIN
+        ports:
+            - "53:53/tcp"
+            - "53:53/udp"
+            - "67:67/udp"
+        secrets:
+            - source: etcd_client_ssl_key
+              target: /etc/ssl/etcd_client.key
+            - source: etcd_client_ssl_crt
+              target: /etc/ssl/etcd_client.crt
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+        environment:
+            - CONF__CONFD__DNSMASQ__BACKEND=etcdv3
+            - CONF__CONFD__DNSMASQ__CLIENT_CAKEYS=/etc/ssl/root_ca.crt
+            - CONF__CONFD__DNSMASQ__CLIENT_CERT=/etc/ssl/etcd_client.crt
+            - CONF__CONFD__DNSMASQ__CLIENT_KEY=/etc/ssl/etcd_client.key
+            - CONF__CONFD__DNSMASQ__NODES__1=https://etcd.podewitz.local:2379
+            - CONF__CONFD__DNSMASQ__WATCH=True
+            - CONF__CONFD__DNSMASQ__ONETIME=False
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - dnsmasq.${DOMAINNAME}
+                ipv4_address: 172.25.0.100
+        depends_on:
+            - etcd
+
+

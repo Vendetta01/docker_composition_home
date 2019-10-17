@@ -1,0 +1,36 @@
+version: '3.4'
+services:
+    etcd:
+        image: etcd
+        build: ./etcd-docker
+        container_name: etcd
+        restart: unless-stopped
+        hostname: etcd.${DOMAINNAME}
+        #healthcheck:
+        ports:
+            - "2379:2379"
+            - "2380:2380"
+        cap_drop:
+            - ALL
+        volumes:
+            - etcd-data:/etcd-data
+            - ./conf/etcd/etcd.conf.yml:/etc/etcd/etcd.conf.yml
+            - ./init/etcd/:/tmp/etcd_init/
+        secrets:
+            - source: etcd_client_ssl_key
+              target: /etc/ssl/etcd_client.key
+            - source: etcd_client_ssl_crt
+              target: /etc/ssl/etcd_client.crt
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+        environment:
+            - ETCD_IMPORT_DIR=/tmp/etcd_init
+            - E3CH_MODE=1
+            - E3CH_DIR_VAL=${ETCD_E3CH_DIR_VAL}
+            - LOG_LEVEL=debug
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - etcd.${DOMAINNAME}
+                ipv4_address: 172.25.0.2
+

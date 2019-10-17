@@ -1,0 +1,26 @@
+# TODO
+
+* [ ] How to resolve domain names (eg. ldap.podewitz.local) in local network so that it is routed to baernas (use dnsmasq-docker) -> dnsmasq-docker as primary dns in router
+* [X] Include paperless in docker-compose.yml
+* [X] convert paperless to use real webserver (nginx/gunicorn)
+* [ ] use real database server (postgres) for paperless (maybe?)
+* [X] How to properly use confd (in containers?) -> first set up confd through environment variables using itself (-backend env -onetime), then start confd and let it configure the rest (through whatever backend is initially set)
+* [X] GUI for etcd
+* [X] reverse-proxy for bundeling all webapps together (for now only phpldapadmin and paperless)
+* [ ] ldap-user-manager:
+    - [X] use groupofnames and members
+    - [X] extend group creation with posixGroup and samba stuff
+    - [X] extend user creation with samba stuff
+    - [X] include samba domain and user/group fields in web interface
+    - [X] create new docker image (nginx+php OR separate nginx and php containers)
+    - [X] fix starttls issues (ldaps does NOT automatically mean that we use starttls!)
+    - [X] get next gid uid from defined location (dn=...)
+    - [ ] new page for samba-setup
+    - [ ] add address + additional samba fields for user creation
+    - [X] fill correct fields (for now the whole name + first name ist saved not last name/first name)
+* [X] dnsmasq-docker:
+    - [X] remove webproc
+    - [X] add supervisord and create separate script for host file watch which then runs through supervisord
+    - [X] Add environment variables to configure dnsmasq
+    - [X] Maybe watch for config change and reload?
+    - [X] Think of way to add own entries during runtime (maybe through confd and etcd?)

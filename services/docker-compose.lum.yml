@@ -1,0 +1,50 @@
+version: '3.4'
+services:
+    lum:
+        image: lum
+        build: ./lum-docker
+        container_name: lum
+        restart: unless-stopped
+        hostname: lum.${DOMAINNAME}
+        #healthcheck:
+        #ports:
+        #    - "8082:8080"
+        secrets:
+            - source: lum_ssl_key
+              target: /etc/ssl/lum.key
+            - source: lum_ssl_crt
+              target: /etc/ssl/lum.crt
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+        environment:
+            - VIRTUAL_HOST=lum.${DOMAINNAME}
+            - VIRTUAL_PORT=80
+            #- VIRTUAL_PROTO=https
+            - SERVER_HOSTNAME=lum.${DOMAINNAME}
+            - LDAP_URI=ldaps://ldap.${DOMAINNAME}:636
+            - LDAP_BASE_DN=dc=podewitz,dc=local
+            - LDAP_TRY_STARTTLS=FALSE
+            - LDAP_REQUIRE_STARTTLS=FALSE
+            - LDAP_ADMIN_BIND_DN=cn=admin,dc=podewitz,dc=local
+            - LDAP_ADMIN_BIND_PWD=admin
+            - LDAP_ADMINS_GROUP=ldap_admins
+            - LDAP_USER_OU=users
+            - LDAP_GROUPS_OU=groups
+            - DEFAULT_USER_GROUP=ldap_users
+            - USERNAME_FORMAT={first_name_initial}{last_name}
+            - LDAP_GROUP_MEMBERSHIP_ATTRIBUTE=member
+            - LDAP_PASSWORD_ENCODING=SSHA
+            - LDAP_CURRENT_ID_DN=cn=curid,ou=idpoolconf,dc=podewitz,dc=local
+            - LDAP_SAMBA_DOMAIN_NAME=BAERNAS
+            - LUM_LDAP_TLS_REQCERT=allow
+            - LUM_ROOT_CRT_URL=/etc/ssl/root_ca.crt
+            - LUM_SSL_KEY=/etc/ssl/lum.key
+            - LUM_SSL_CRT=/etc/ssl/lum.crt
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - lum.${DOMAINNAME}
+                ipv4_address: 172.25.0.6
+        depends_on:
+            - openldap-server
+

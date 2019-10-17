@@ -1,0 +1,30 @@
+version: '3.4'
+services:
+    nginx-proxy:
+        image: jwilder/nginx-proxy:alpine
+        container_name: nginx-proxy
+        restart: unless-stopped
+        hostname: nginx-proxy.${DOMAINNAME}
+        #healthcheck
+        ports:
+            - "80:80"
+            - "443:443"
+        environment:
+            - DEFAULT_HOST=lum.${DOMAINNAME}
+        secrets:
+            - source: lum_ssl_key
+              target: /etc/nginx/certs/lum.${DOMAINNAME}.key
+            - source: lum_ssl_crt
+              target: /etc/nginx/certs/lum.${DOMAINNAME}.crt
+            - source: paperless_ssl_key
+              target: /etc/nginx/certs/paperless.${DOMAINNAME}.key
+            - source: paperless_ssl_crt
+              target: /etc/nginx/certs/paperless.${DOMAINNAME}.crt
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - nginx-proxy.${DOMAINNAME}
+                ipv4_address: 172.25.0.7
+

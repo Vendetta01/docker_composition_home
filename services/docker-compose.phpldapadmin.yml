@@ -1,0 +1,28 @@
+version: '3.4'
+services:
+    phpldapadmin:
+        image: osixia/phpldapadmin:latest
+        container_name: phpldapadmin
+        restart: unless-stopped
+        hostname: phpldapadmin.${DOMAINNAME}
+        #healthcheck
+        command: --copy-service
+        #ports:
+        #    - "8080:80"
+        secrets:
+            - ldap_ssl_key
+            - ldap_ssl_crt
+            - root_ca_crt
+        environment:
+            PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'ldaps://ldap.podewitz.local:636': [{'server': [{'port': 0}]}]}]"
+            PHPLDAPADMIN_HTTPS: "false"
+            VIRTUAL_HOST: "phpldapadmin.${DOMAINNAME}"
+            VIRTUAL_PORT: "80"
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - phpldapadmin.${DOMAINNAME}
+                ipv4_address: 172.25.0.5
+        depends_on:
+            - openldap-server
+
