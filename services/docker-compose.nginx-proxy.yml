@@ -9,6 +9,8 @@ services:
         ports:
             - "80:80"
             - "443:443"
+        env_file:
+            - docker-compose.base.env
         environment:
             - DEFAULT_HOST=lum.${DOMAINNAME}
         secrets:
@@ -20,6 +22,10 @@ services:
               target: /etc/nginx/certs/paperless.${DOMAINNAME}.key
             - source: paperless_ssl_crt
               target: /etc/nginx/certs/paperless.${DOMAINNAME}.crt
+            - source: e3w_ssl_key
+              target: /etc/nginx/certs/e3w.${DOMAINNAME}.key
+            - source: e3w_ssl_crt
+              target: /etc/nginx/certs/e3w.${DOMAINNAME}.crt
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
         networks:

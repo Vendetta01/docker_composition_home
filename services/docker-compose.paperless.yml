@@ -33,6 +33,8 @@ services:
               target: /etc/ssl/paperless.podewitz.local.key
             - source: paperless_ssl_crt
               target: /etc/ssl/paperless.podewitz.local.crt
+        env_file:
+            - docker-compose.base.env
         #env_file:
         #    - ./services/docker-compose.paperless.env
         # The reason the line is here is so that the webserver that doesn't do
@@ -45,16 +47,6 @@ services:
             #- VIRTUAL_PROTO=https
             #- HTTPS_METHOD=noredirect
             - SERVER_HOSTNAME=paperless.${DOMAINNAME}
-            #- CONF__CONFD__PAPERLESS__BACKEND=env
-            - CONF__CONFD__PAPERLESS__BACKEND=etcdv3
-            - CONF__CONFD__PAPERLESS__CLIENT_CAKEYS=/etc/ssl/root_ca.crt
-            - CONF__CONFD__PAPERLESS__CLIENT_CERT=/etc/ssl/etcd_client.crt
-            - CONF__CONFD__PAPERLESS__CLIENT_KEY=/etc/ssl/etcd_client.key
-            - CONF__CONFD__PAPERLESS__NODES__1=https://etcd.podewitz.local:2379
-            - CONF__CONFD__PAPERLESS__WATCH=True
-            - CONF__CONFD__PAPERLESS__ONETIME=False
-            - CONF__CONFD__PAPERLESS__LOG_LEVEL=debug
-            #- CONF__PAPERLESS__LDAP__TLS_REQCERT=allow
         #command: ["runserver", "--insecure", "--noreload", "0.0.0.0:8080"]
         networks:
             podewitz_local_net:

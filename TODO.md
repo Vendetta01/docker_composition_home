@@ -24,3 +24,10 @@
     - [X] Add environment variables to configure dnsmasq
     - [X] Maybe watch for config change and reload?
     - [X] Think of way to add own entries during runtime (maybe through confd and etcd?)
+* [X] e3w: dir_value is defined in different locations -> correct to achieve single source of truth
+* [ ] confd: create test environment to check if templates are correct
+* [ ] container need to register in etcd with hostname so that dnsmasq nows about them
+* [X] merge all /conf/confd/app into /conf/confd so that all services use the same config backend
+* [X] wait-for-it.sh needs a URL, which should be provided to all services in the same way (not hardcoded into environment.sh)
+* [X] rewrite service definitions so that all services use one source for the confd configuration (env vars defined for all services)
+* [ ] refactor lum-docker to use confd for configuration

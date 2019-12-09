@@ -23,11 +23,12 @@ services:
               target: /etc/ssl/etcd_client.crt
             - source: root_ca_crt
               target: /etc/ssl/root_ca.crt
+        env_file:
+            - docker-compose.base.env
         environment:
-            - ETCD_IMPORT_DIR=/tmp/etcd_init
+            - IMPORT_DIR=/tmp/etcd_init
             - E3CH_MODE=1
-            - E3CH_DIR_VAL=${ETCD_E3CH_DIR_VAL}
-            - LOG_LEVEL=debug
+            #- LOG_LEVEL=debug
         networks:
             podewitz_local_net:
                 aliases:

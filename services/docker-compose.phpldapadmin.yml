@@ -13,6 +13,8 @@ services:
             - ldap_ssl_key
             - ldap_ssl_crt
             - root_ca_crt
+        env_file:
+            - docker-compose.base.env
         environment:
             PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'ldaps://ldap.podewitz.local:636': [{'server': [{'port': 0}]}]}]"
             PHPLDAPADMIN_HTTPS: "false"
@@ -25,4 +27,5 @@ services:
                 ipv4_address: 172.25.0.5
         depends_on:
             - openldap-server
+            - nginx-proxy
 

@@ -24,6 +24,8 @@ services:
               target: /container/service/slapd/assets/certs/ldap_ssl.crt
             - source: root_ca_crt
               target: /container/service/slapd/assets/certs/root_ca.crt
+        env_file:
+            - docker-compose.base.env
         environment:
             - LDAP_TLS_CRT_FILENAME=ldap_ssl.crt
             - LDAP_TLS_KEY_FILENAME=ldap_ssl.key
@@ -34,6 +36,8 @@ services:
             - LDAP_BACKEND=mdb
             - LDAP_TLS_ENFORCE=true
             - LDAP_TLS_VERIFY_CLIENT=try
+        depends_on:
+            - etcd
         networks:
             podewitz_local_net:
                 aliases:

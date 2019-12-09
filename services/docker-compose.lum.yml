@@ -16,6 +16,8 @@ services:
               target: /etc/ssl/lum.crt
             - source: root_ca_crt
               target: /etc/ssl/root_ca.crt
+        env_file:
+            - docker-compose.base.env
         environment:
             - VIRTUAL_HOST=lum.${DOMAINNAME}
             - VIRTUAL_PORT=80
@@ -47,4 +49,5 @@ services:
                 ipv4_address: 172.25.0.6
         depends_on:
             - openldap-server
+            - nginx-proxy
 

@@ -18,17 +18,27 @@ services:
               target: /etc/ssl/etcd_client.crt
             - source: root_ca_crt
               target: /etc/ssl/root_ca.crt
+            - source: e3w_ssl_key
+              target: /etc/ssl/e3w.key
+            - source: e3w_ssl_crt
+              target: /etc/ssl/e3w.crt
+        env_file:
+            - docker-compose.base.env
         environment:
             - VIRTUAL_HOST=e3w.${DOMAINNAME}
             - VIRTUAL_PORT=8080
-            - E3W_AUTH=false
-            - E3W_ADDR=etcd.podewitz.local:2379
-            - E3W_ROOT_KEY=/conf
-            - E3W_DIR_VALUE=${ETCD_E3CH_DIR_VAL}
+            - VIRTUAL_PROTO=https
+            - CONFD__E3W__APP__KEY_FILE=/etc/ssl/e3w.key
+            - CONFD__E3W__APP__CERT_FILE=/etc/ssl/e3w.crt
+            - CONFD__E3W__ETCD__DIR_VALUE=${ETCD_E3CH_DIR_VAL}
+            #- E3W_AUTH=false
+            #- E3W_ADDR=etcd.podewitz.local:2379
+            #- E3W_ROOT_KEY=/conf
+            #- E3W_DIR_VALUE=${ETCD_E3CH_DIR_VAL}
             #- E3W_DIR_VALUE=test_dir_val
-            - SECRET_SSL_KEY=/etc/ssl/etcd_client.key
-            - SECRET_SSL_CRT=/etc/ssl/etcd_client.crt
-            - SECRET_ROOT_CRT=/etc/ssl/root_ca.crt
+            #- SECRET_SSL_KEY=/etc/ssl/etcd_client.key
+            #- SECRET_SSL_CRT=/etc/ssl/etcd_client.crt
+            #- SECRET_ROOT_CRT=/etc/ssl/root_ca.crt
         networks:
             podewitz_local_net:
                 aliases:
@@ -36,4 +46,6 @@ services:
                 ipv4_address: 172.25.0.3
         depends_on:
             - etcd
+            - openldap-server
+            - nginx-proxy
 

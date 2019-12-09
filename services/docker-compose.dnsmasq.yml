@@ -20,14 +20,9 @@ services:
               target: /etc/ssl/etcd_client.crt
             - source: root_ca_crt
               target: /etc/ssl/root_ca.crt
-        environment:
-            - CONF__CONFD__DNSMASQ__BACKEND=etcdv3
-            - CONF__CONFD__DNSMASQ__CLIENT_CAKEYS=/etc/ssl/root_ca.crt
-            - CONF__CONFD__DNSMASQ__CLIENT_CERT=/etc/ssl/etcd_client.crt
-            - CONF__CONFD__DNSMASQ__CLIENT_KEY=/etc/ssl/etcd_client.key
-            - CONF__CONFD__DNSMASQ__NODES__1=https://etcd.podewitz.local:2379
-            - CONF__CONFD__DNSMASQ__WATCH=True
-            - CONF__CONFD__DNSMASQ__ONETIME=False
+        env_file:
+            - docker-compose.base.env
+        #environment:
         networks:
             podewitz_local_net:
                 aliases:

@@ -17,6 +17,8 @@ services:
             #- pihole-pihole-conf:/etc/pihole/
             - ./conf/pihole/pihole:/etc/pihole
             - pihole-dnsmasq-conf:/etc/dnsmasq.d/
+        env_file:
+            - docker-compose.base.env
         environment:
             ServerIP: 172.25.0.10
             PROXY_LOCATION: pihole
