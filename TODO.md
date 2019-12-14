@@ -18,6 +18,8 @@
     - [ ] new page for samba-setup
     - [ ] add address + additional samba fields for user creation
     - [X] fill correct fields (for now the whole name + first name ist saved not last name/first name)
+    - [ ] rework config so that it can be read from file
+    - [ ] use confd in docker image for configuration
 * [X] dnsmasq-docker:
     - [X] remove webproc
     - [X] add supervisord and create separate script for host file watch which then runs through supervisord
@@ -31,3 +33,7 @@
 * [X] wait-for-it.sh needs a URL, which should be provided to all services in the same way (not hardcoded into environment.sh)
 * [X] rewrite service definitions so that all services use one source for the confd configuration (env vars defined for all services)
 * [ ] refactor lum-docker to use confd for configuration
+* [ ] rework backup mechanism for openldap: backup scripts run an exec on the actual service container; service needs host mount for backup folder
+* [ ] alternative: make container that interfaces with docker (has an installed docker daemon inside) and addresses backup etc.
+* [ ] implement switch between init from volume backups and init from files
+* [ ] phpldapadmin: tools missing for health check

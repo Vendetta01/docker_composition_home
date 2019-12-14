@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $# -lt 2 ]]; then
-  echo "Usage: docker_backup_volume volume_name backup_file_url"
+  echo "Usage: docker_backup_volume volume_name backup_file_url [-h, --dereference]"
   exit 1
 fi
 
@@ -12,6 +12,10 @@ fi
 
 touch $2
 
+if [[ $3 == "-h" || $3 == "--dereference" ]]; then
+    ADD_TAR_OPTIONS="-h"
+fi
+
 docker run -it --rm -v $1:/volume -v $2:/backup/backup.tar.gz alpine \
-  tar -czf /backup/backup.tar.gz -C /volume ./
+  tar -cz $ADD_TAR_OPTIONS -f /backup/backup.tar.gz -C /volume ./
 

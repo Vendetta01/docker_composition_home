@@ -1,12 +1,16 @@
 version: '3.4'
 services:
     etcd:
-        image: etcd
-        build: ./etcd-docker
+        image: npodewitz/etcd:latest
+        #build: ./etcd-docker
         container_name: etcd
         restart: unless-stopped
         hostname: etcd.${DOMAINNAME}
-        #healthcheck:
+        healthcheck:
+            test: ["CMD", "nc", "-w", "1", "etcd.podewitz.local", "2379"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
         ports:
             - "2379:2379"
             - "2380:2380"

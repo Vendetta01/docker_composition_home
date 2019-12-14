@@ -1,14 +1,16 @@
 version: '3.4'
 services:
     e3w:
-        image: e3w
-        build: ./e3w-docker
+        image: npodewitz/e3w:latest
+        #build: ./e3w-docker
         container_name: e3w
         restart: unless-stopped
         hostname: e3w.${DOMAINNAME}
-        #healthcheck:
-        #ports:
-            #- "8081:8080"
+        healthcheck:
+            test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://e3w.podewitz.local:8443"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
         #cap_drop:
             #- ALL
         secrets:
@@ -26,7 +28,7 @@ services:
             - docker-compose.base.env
         environment:
             - VIRTUAL_HOST=e3w.${DOMAINNAME}
-            - VIRTUAL_PORT=8080
+            - VIRTUAL_PORT=8443
             - VIRTUAL_PROTO=https
             - CONFD__E3W__APP__KEY_FILE=/etc/ssl/e3w.key
             - CONFD__E3W__APP__CERT_FILE=/etc/ssl/e3w.crt

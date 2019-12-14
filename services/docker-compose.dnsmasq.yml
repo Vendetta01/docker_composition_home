@@ -1,12 +1,16 @@
 version: '3.4'
 services:
     dnsmasq:
-        image: dnsmasq
-        build: ./dnsmasq-docker
+        image: npodewitz/dnsmasq:latest
+        #build: ./dnsmasq-docker
         container_name: dnsmasq
         restart: unless-stopped
         hostname: dnsmasq.${DOMAINNAME}
-        #healthcheck:
+        healthcheck:
+            test: ["CMD", "nc" , "-w", "1", "dnsmasq.podewitz.local", "53"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
         cap_add:
             - NET_ADMIN
         ports:

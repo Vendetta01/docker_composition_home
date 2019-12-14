@@ -2,13 +2,13 @@ version: '3.4'
 
 services:
     paperless:
-        build: ./paperless-docker
-        image: paperless
+        image: npodewitz/paperless:latest
+        #build: ./paperless-docker
         container_name: paperless
         hostname: paperless.${DOMAINNAME}
         restart: unless-stopped
         healthcheck:
-            test: ["CMD", "curl" , "-f", "http://paperless.podewitz.local:8080"]
+            test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://paperless.podewitz.local:443"]
             interval: 30s
             timeout: 10s
             retries: 5
