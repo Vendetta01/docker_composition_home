@@ -1,0 +1,95 @@
+version: '3.4'
+services:
+    bookstack:
+        image: npodewitz/bookstack:latest
+        #build: ./bookstack-docker
+        container_name: bookstack
+        restart: unless-stopped
+        hostname: bookstack.${DOMAINNAME}
+        #healthcheck:
+        #    test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://e3w.podewitz.local:8443"]
+        #    interval: 30s
+        #    timeout: 10s
+        #    retries: 5
+        #cap_drop:
+            #- ALL
+        secrets:
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+            - source: bookstack_ssl_key
+              target: /etc/ssl/bookstack.key
+            - source: bookstack_ssl_crt
+              target: /etc/ssl/bookstack.crt
+        env_file:
+            - docker-compose.base.env
+        environment:
+            - VIRTUAL_HOST=bookstack.${DOMAINNAME}
+            - VIRTUAL_PORT=8443
+            - VIRTUAL_PROTO=https
+            - CONFD__BOOKSTACK__APP__KEY_FILE=/etc/ssl/bookstack.key
+            - CONFD__BOOKSTACK__APP__CERT_FILE=/etc/ssl/bookstack.crt
+            #- E3W_AUTH=false
+            #- E3W_ADDR=etcd.podewitz.local:2379
+            #- E3W_ROOT_KEY=/conf
+            #- E3W_DIR_VALUE=${ETCD_E3CH_DIR_VAL}
+            #- E3W_DIR_VALUE=test_dir_val
+            #- SECRET_SSL_KEY=/etc/ssl/etcd_client.key
+            #- SECRET_SSL_CRT=/etc/ssl/etcd_client.crt
+            #- SECRET_ROOT_CRT=/etc/ssl/root_ca.crt
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - e3w.${DOMAINNAME}
+                ipv4_address: 172.25.0.9
+        depends_on:
+            - etcd
+            - openldap-server
+            - nginx-proxy
+            - bookstack_db
+
+    bookstack_db:
+        image: maria-db???
+        #build: ./bookstack-docker
+        container_name: bookstack_db
+        restart: unless-stopped
+        hostname: bookstack_db.${DOMAINNAME}
+        #healthcheck:
+        #    test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://e3w.podewitz.local:8443"]
+        #    interval: 30s
+        #    timeout: 10s
+        #    retries: 5
+        #cap_drop:
+            #- ALL
+        secrets:
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+            - source: bookstack_db_ssl_key
+              target: /etc/ssl/bookstack_db.key
+            - source: bookstack_db_ssl_crt
+              target: /etc/ssl/bookstack_db.crt
+        env_file:
+            - docker-compose.base.env
+        environment:
+            - VIRTUAL_HOST=bookstack.${DOMAINNAME}
+            - VIRTUAL_PORT=8443
+            - VIRTUAL_PROTO=https
+            #- CONFD__BOOKSTACK__APP__KEY_FILE=/etc/ssl/bookstack.key
+            #- CONFD__BOOKSTACK__APP__CERT_FILE=/etc/ssl/bookstack.crt
+            #- E3W_AUTH=false
+            #- E3W_ADDR=etcd.podewitz.local:2379
+            #- E3W_ROOT_KEY=/conf
+            #- E3W_DIR_VALUE=${ETCD_E3CH_DIR_VAL}
+            #- E3W_DIR_VALUE=test_dir_val
+            #- SECRET_SSL_KEY=/etc/ssl/etcd_client.key
+            #- SECRET_SSL_CRT=/etc/ssl/etcd_client.crt
+            #- SECRET_ROOT_CRT=/etc/ssl/root_ca.crt
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - e3w.${DOMAINNAME}
+                ipv4_address: 172.25.0.9
+        depends_on:
+            - etcd
+            - openldap-server
+            - nginx-proxy
+            - bookstack_db
