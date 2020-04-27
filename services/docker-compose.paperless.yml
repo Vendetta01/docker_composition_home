@@ -15,7 +15,7 @@ services:
         volumes:
             - paperless-data:/usr/src/paperless/data
             - paperless-media:/usr/src/paperless/media
-            - ./consume:/consume
+            - /mnt/hdd/paperless_data/consume:/consume
             # Likewise, you can add a local path to mount a directory for
             # exporting. This is not strictly needed for paperless to
             # function, only if you're exporting your files: uncomment
