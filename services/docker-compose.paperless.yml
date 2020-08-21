@@ -5,7 +5,7 @@ services:
         image: npodewitz/paperless:latest
         #build: ./paperless-docker
         container_name: paperless
-        hostname: paperless.${DOMAINNAME}
+        hostname: paperless.${REALM}
         restart: unless-stopped
         healthcheck:
             test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://paperless.podewitz.local:443"]
@@ -27,7 +27,7 @@ services:
               target: /etc/ssl/etcd_client.key
             - source: etcd_client_ssl_crt
               target: /etc/ssl/etcd_client.crt
-            - source: root_ca_crt
+            - source: root_ca.crt
               target: /etc/ssl/root_ca.crt
             - source: paperless_ssl_key
               target: /etc/ssl/paperless.podewitz.local.key
@@ -42,20 +42,20 @@ services:
         # languages the user might have set in the env-file by overwriting the
         # value with nothing.
         environment:
-            - VIRTUAL_HOST=paperless.${DOMAINNAME}
+            - VIRTUAL_HOST=paperless.${REALM}
             - VIRTUAL_PORT=80
             #- VIRTUAL_PROTO=https
             #- HTTPS_METHOD=noredirect
-            - SERVER_HOSTNAME=paperless.${DOMAINNAME}
+            - SERVER_HOSTNAME=paperless.${REALM}
         #command: ["runserver", "--insecure", "--noreload", "0.0.0.0:8080"]
         networks:
-            podewitz_local_net:
+            podewitz_de_net:
                 aliases:
-                    - paperless.${DOMAINNAME}
+                    - paperless.${REALM}
                 ipv4_address: 172.25.0.8
         depends_on:
             - etcd
-            - openldap-server
+            - addc
             - nginx-proxy
 
 

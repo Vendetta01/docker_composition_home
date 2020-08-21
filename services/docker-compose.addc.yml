@@ -1,0 +1,77 @@
+version: '3.4'
+
+services:
+    addc:
+        image: npodewitz/addc:latest
+        #build: ./addc-docker
+        container_name: addc
+        hostname: addc.${REALM}
+        restart: unless-stopped
+        cap_add:
+          - SYS_ADMIN
+        ports:
+          - "53:53/tcp"
+          - "53:53/udp"
+          - "88:88/tcp"
+          - "88:88/udp"
+          - "135:135/tcp"
+          - "137:137/udp"
+          - "138:138/udp"
+          - "139:139/tcp"
+          - "389:389/tcp"
+          - "389:389/udp"
+          - "445:445/tcp"
+          - "464:464/tcp"
+          - "464:464/udp"
+          - "636:636/tcp"
+          - "3268:3268/tcp"
+          - "3269:3269/tcp"
+          - "49152:49152/tcp"
+          - "49153:49153/tcp"
+          - "49154:49154/tcp"
+        #healthcheck:
+        #    test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://paperless.podewitz.de:389"]
+        #    interval: 30s
+        #    timeout: 10s
+        #    retries: 5
+        volumes:
+            - addc-data:/var/lib/samba
+            - ./conf/addc/schema/:/tmp/import_schemata/
+            - ./conf/addc/content/:/tmp/import_content/
+        secrets:
+            - root_ca.crt
+            - addc_ssl.key
+            - addc_ssl.crt
+            - addc_adminpass
+        env_file:
+            - docker-compose.base.env
+        environment:
+            #- VIRTUAL_HOST=addc.${REALM}
+            #- VIRTUAL_PORT=80
+            #- VIRTUAL_PROTO=https
+            #- HTTPS_METHOD=noredirect
+            #- SERVER_HOSTNAME=paperless.${REALM}
+            - CONFD__ADDC__REALM=${REALM}
+            - CONFD__ADDC__DOMAIN=${DOMAIN}
+            - CONFD__ADDC__ADMINPASS_FILE=${SECRETS_BASE_PATH}/addc_adminpass
+            - CONFD__ADDC__TLS_KEYFILE_URL=${SECRETS_BASE_PATH}/addc_ssl.key
+            - CONFD__ADDC__TLS_CERTFILE_URL=${SECRETS_BASE_PATH}/addc_ssl.crt
+            - CONFD__ADDC__TLS_CAFILE_URL=${SECRETS_BASE_PATH}/root_ca.crt
+            - CONFD__ADDC__PASSWORD_COMPLEXITY=off
+            - CONFD__ADDC__DNS_FORWARDER_IP=192.168.178.1
+            - CONFD__ADDC__HOST_IP=192.168.178.52
+            - CONFD__ADDC__SCHEMA_UPDATE_ALLOWED=1
+            - CONFD__ADDC__USE_RFC2307=1
+            - CONFD__ADDC__DISABLE_GUEST_USER=1
+            - CONFD__ADDC__DISABLE_MACHINE_JOIN_BY_USER=1
+            - LOG_LEVEL=debug
+        #command: ["runserver", "--insecure", "--noreload", "0.0.0.0:8080"]
+        #network_mode: "host"
+        networks:
+            podewitz_de_net:
+                aliases:
+                    - addc.${REALM}
+                ipv4_address: 172.25.0.4
+        depends_on:
+            - etcd
+

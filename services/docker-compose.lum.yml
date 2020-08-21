@@ -5,7 +5,7 @@ services:
         #build: ./lum-docker
         container_name: lum
         restart: unless-stopped
-        hostname: lum.${DOMAINNAME}
+        hostname: lum.${REALM}
         healthcheck:
             test: ["CMD", "curl" , "-f", "lum.podewitz.local"]
             interval: 30s
@@ -18,16 +18,16 @@ services:
               target: /etc/ssl/lum.key
             - source: lum_ssl_crt
               target: /etc/ssl/lum.crt
-            - source: root_ca_crt
+            - source: root_ca.crt
               target: /etc/ssl/root_ca.crt
         env_file:
             - docker-compose.base.env
         environment:
-            - VIRTUAL_HOST=lum.${DOMAINNAME}
+            - VIRTUAL_HOST=lum.${REALM}
             - VIRTUAL_PORT=80
             #- VIRTUAL_PROTO=https
-            - SERVER_HOSTNAME=lum.${DOMAINNAME}
-            - LDAP_URI=ldaps://ldap.${DOMAINNAME}:636
+            - SERVER_HOSTNAME=lum.${REALM}
+            - LDAP_URI=ldaps://ldap.${REALM}:636
             - LDAP_BASE_DN=dc=podewitz,dc=local
             - LDAP_TRY_STARTTLS=FALSE
             - LDAP_REQUIRE_STARTTLS=FALSE
@@ -47,11 +47,11 @@ services:
             - LUM_SSL_KEY=/etc/ssl/lum.key
             - LUM_SSL_CRT=/etc/ssl/lum.crt
         networks:
-            podewitz_local_net:
+            podewitz_de_net:
                 aliases:
-                    - lum.${DOMAINNAME}
+                    - lum.${REALM}
                 ipv4_address: 172.25.0.6
         depends_on:
-            - openldap-server
+            - addc
             - nginx-proxy
 

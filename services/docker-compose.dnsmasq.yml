@@ -5,7 +5,7 @@ services:
         #build: ./dnsmasq-docker
         container_name: dnsmasq
         restart: unless-stopped
-        hostname: dnsmasq.${DOMAINNAME}
+        hostname: dnsmasq.${REALM}
         healthcheck:
             test: ["CMD", "nc" , "-w", "1", "dnsmasq.podewitz.local", "53"]
             interval: 30s
@@ -22,15 +22,15 @@ services:
               target: /etc/ssl/etcd_client.key
             - source: etcd_client_ssl_crt
               target: /etc/ssl/etcd_client.crt
-            - source: root_ca_crt
+            - source: root_ca.crt
               target: /etc/ssl/root_ca.crt
         env_file:
             - docker-compose.base.env
         #environment:
         networks:
-            podewitz_local_net:
+            podewitz_de_net:
                 aliases:
-                    - dnsmasq.${DOMAINNAME}
+                    - dnsmasq.${REALM}
                 ipv4_address: 172.25.0.100
         depends_on:
             - etcd

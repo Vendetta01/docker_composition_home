@@ -1,12 +1,14 @@
 version: '3.4'
 
 networks:
-    podewitz_local_net:
+    podewitz_de_net:
         ipam:
             config:
                 - subnet: 172.25.0.0/16
 
 volumes:
+    addc-data:
+        name: addc-data
     etcd-data:
         name: etcd-data
     openldap-config:
@@ -20,25 +22,27 @@ volumes:
 
 secrets:
     etcd_client_ssl_key:
-        file: ./SSLCertificates/local/podewitz/etcd/etcd.podewitz.local.key
+        file: ./SSLCertificates/de/podewitz/etcd/etcd.podewitz.de.key
     etcd_client_ssl_crt:
-        file: ./SSLCertificates/local/podewitz/etcd/etcd.podewitz.local.crt
-    ldap_ssl_key:
-        file: ./SSLCertificates/local/podewitz/ldap/ldap.podewitz.local.key
-    ldap_ssl_crt:
-        file: ./SSLCertificates/local/podewitz/ldap/ldap.podewitz.local.crt
+        file: ./SSLCertificates/de/podewitz/etcd/etcd.podewitz.de.crt
     lum_ssl_key:
-        file: ./SSLCertificates/local/podewitz/lum/lum.podewitz.local.key
+        file: ./SSLCertificates/de/podewitz/lum/lum.podewitz.de.key
     lum_ssl_crt:
-        file: ./SSLCertificates/local/podewitz/lum/lum.podewitz.local.crt
+        file: ./SSLCertificates/de/podewitz/lum/lum.podewitz.de.crt
     paperless_ssl_key:
-        file: ./SSLCertificates/local/podewitz/paperless/paperless.podewitz.local.key
+        file: ./SSLCertificates/de/podewitz/paperless/paperless.podewitz.de.key
     paperless_ssl_crt:
-        file: ./SSLCertificates/local/podewitz/paperless/paperless.podewitz.local.crt
+        file: ./SSLCertificates/de/podewitz/paperless/paperless.podewitz.de.crt
     e3w_ssl_key:
-        file: ./SSLCertificates/local/podewitz/e3w/e3w.podewitz.local.key
+        file: ./SSLCertificates/de/podewitz/e3w/e3w.podewitz.de.key
     e3w_ssl_crt:
-        file: ./SSLCertificates/local/podewitz/e3w/e3w.podewitz.local.crt
-    root_ca_crt:
+        file: ./SSLCertificates/de/podewitz/e3w/e3w.podewitz.de.crt
+    addc_ssl.key:
+        file: ./SSLCertificates/de/podewitz/addc/addc.podewitz.de.key
+    addc_ssl.crt:
+        file: ./SSLCertificates/de/podewitz/addc/addc.podewitz.de.crt
+    addc_adminpass:
+        file: ./init/addc/config/adminpass
+    root_ca.crt:
         file: ./SSLCertificates/rootCA.crt
 

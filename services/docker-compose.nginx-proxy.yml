@@ -4,7 +4,7 @@ services:
         image: jwilder/nginx-proxy:alpine
         container_name: nginx-proxy
         restart: unless-stopped
-        hostname: nginx-proxy.${DOMAINNAME}
+        hostname: nginx-proxy.${REALM}
         #healthcheck
         ports:
             - "80:80"
@@ -12,25 +12,25 @@ services:
         env_file:
             - docker-compose.base.env
         environment:
-            - DEFAULT_HOST=lum.${DOMAINNAME}
+            - DEFAULT_HOST=lum.${REALM}
         secrets:
             - source: lum_ssl_key
-              target: /etc/nginx/certs/lum.${DOMAINNAME}.key
+              target: /etc/nginx/certs/lum.${REALM}.key
             - source: lum_ssl_crt
-              target: /etc/nginx/certs/lum.${DOMAINNAME}.crt
+              target: /etc/nginx/certs/lum.${REALM}.crt
             - source: paperless_ssl_key
-              target: /etc/nginx/certs/paperless.${DOMAINNAME}.key
+              target: /etc/nginx/certs/paperless.${REALM}.key
             - source: paperless_ssl_crt
-              target: /etc/nginx/certs/paperless.${DOMAINNAME}.crt
+              target: /etc/nginx/certs/paperless.${REALM}.crt
             - source: e3w_ssl_key
-              target: /etc/nginx/certs/e3w.${DOMAINNAME}.key
+              target: /etc/nginx/certs/e3w.${REALM}.key
             - source: e3w_ssl_crt
-              target: /etc/nginx/certs/e3w.${DOMAINNAME}.crt
+              target: /etc/nginx/certs/e3w.${REALM}.crt
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
         networks:
-            podewitz_local_net:
+            podewitz_de_net:
                 aliases:
-                    - nginx-proxy.${DOMAINNAME}
+                    - nginx-proxy.${REALM}
                 ipv4_address: 172.25.0.7
 

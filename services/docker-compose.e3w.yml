@@ -5,7 +5,7 @@ services:
         #build: ./e3w-docker
         container_name: e3w
         restart: unless-stopped
-        hostname: e3w.${DOMAINNAME}
+        hostname: e3w.${REALM}
         healthcheck:
             test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://e3w.podewitz.local:8443"]
             interval: 30s
@@ -18,7 +18,7 @@ services:
               target: /etc/ssl/etcd_client.key
             - source: etcd_client_ssl_crt
               target: /etc/ssl/etcd_client.crt
-            - source: root_ca_crt
+            - source: root_ca.crt
               target: /etc/ssl/root_ca.crt
             - source: e3w_ssl_key
               target: /etc/ssl/e3w.key
@@ -27,7 +27,7 @@ services:
         env_file:
             - docker-compose.base.env
         environment:
-            - VIRTUAL_HOST=e3w.${DOMAINNAME}
+            - VIRTUAL_HOST=e3w.${REALM}
             - VIRTUAL_PORT=8443
             - VIRTUAL_PROTO=https
             - CONFD__E3W__APP__KEY_FILE=/etc/ssl/e3w.key
@@ -42,12 +42,12 @@ services:
             #- SECRET_SSL_CRT=/etc/ssl/etcd_client.crt
             #- SECRET_ROOT_CRT=/etc/ssl/root_ca.crt
         networks:
-            podewitz_local_net:
+            podewitz_de_net:
                 aliases:
-                    - e3w.${DOMAINNAME}
+                    - e3w.${REALM}
                 ipv4_address: 172.25.0.3
         depends_on:
             - etcd
-            - openldap-server
+            - addc
             - nginx-proxy
 

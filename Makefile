@@ -1,5 +1,5 @@
 
-SERVICES := etcd openldap-server phpldapadmin e3w lum nginx-proxy dnsmasq paperless
+SERVICES := etcd addc phpldapadmin e3w lum nginx-proxy dnsmasq paperless
 
 RUN_SERVICES := $(SERVICES:%=run-%)
 CLEAN_RUN_SERVICES := $(SERVICES:%=clean-run-%)

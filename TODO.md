@@ -37,3 +37,6 @@
 * [ ] alternative: make container that interfaces with docker (has an installed docker daemon inside) and addresses backup etc.
 * [ ] implement switch between init from volume backups and init from files
 * [ ] phpldapadmin: tools missing for health check
+* [ ] addc:
+    - [ ] dns server returns local docker ip address for domain controller
+    - [ ] maybe use external dns server bind9? Must be configured so that it returns a specific ip address for domain controller
