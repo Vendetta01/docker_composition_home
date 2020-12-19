@@ -17,6 +17,10 @@ volumes:
         name: paperless-data
     paperless-media:
         name: paperless-media
+    nextcloud-config:
+        name: nextcloud-config
+    postgres-data:
+        name: postgres-data
 
 secrets:
     etcd_client_ssl_key:
@@ -39,6 +43,13 @@ secrets:
         file: ./SSLCertificates/local/podewitz/e3w/e3w.podewitz.local.key
     e3w_ssl_crt:
         file: ./SSLCertificates/local/podewitz/e3w/e3w.podewitz.local.crt
+    nextcloud_ssl_key:
+        file: ./SSLCertificates/local/podewitz/nextcloud/nextcloud.podewitz.local.key
+    nextcloud_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/nextcloud/nextcloud.podewitz.local.crt
     root_ca_crt:
         file: ./SSLCertificates/rootCA.crt
+
+    db_admin_password:
+        file: ./init/db/admin_password
 

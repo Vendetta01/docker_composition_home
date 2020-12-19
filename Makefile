@@ -1,5 +1,5 @@
 
-SERVICES := etcd openldap-server phpldapadmin e3w lum nginx-proxy dnsmasq paperless
+SERVICES := etcd openldap-server phpldapadmin e3w lum nginx-proxy dnsmasq paperless nextcloud db
 
 RUN_SERVICES := $(SERVICES:%=run-%)
 CLEAN_RUN_SERVICES := $(SERVICES:%=clean-run-%)
@@ -43,7 +43,7 @@ clean-run: stop clean init run
 
 clean-run-daemon: stop clean init run-daemon
 
-$(CLEAN_RUN_SERVICES): clean-run-%: clean init-% run-%
+$(CLEAN_RUN_SERVICES): clean-run-%: clean init run-%
 
 init: $(INIT_SERVICES)
 

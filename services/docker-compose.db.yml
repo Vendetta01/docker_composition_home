@@ -1,0 +1,49 @@
+version: '3.4'
+
+services:
+    db:
+        image: postgres:${DOCKER_POSTGRES_VERSION}
+        #build: ./postgres
+        container_name: db
+        hostname: db.${DOMAINNAME}
+        restart: unless-stopped
+        #healthcheck:
+        #    test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://nextcloud.podewitz.local:443"]
+        #    interval: 30s
+        #    timeout: 10s
+        #    retries: 5
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        secrets:
+            - source: etcd_client_ssl_key
+              target: /etc/ssl/etcd_client.key
+            - source: etcd_client_ssl_crt
+              target: /etc/ssl/etcd_client.crt
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+            - source: nextcloud_ssl_key
+              target: /etc/ssl/nextcloud.podewitz.local.key
+            - source: nextcloud_ssl_crt
+              target: /etc/ssl/nextcloud.podewitz.local.crt
+            - db_admin_password
+        env_file:
+            - docker-compose.base.env
+        environment:
+            #- VIRTUAL_HOST=db.${DOMAINNAME}
+            #- VIRTUAL_PORT=80
+            #- VIRTUAL_PROTO=https
+            #- HTTPS_METHOD=noredirect
+            #- SERVER_HOSTNAME=db.${DOMAINNAME}
+            - POSTGRES_USER=admin
+            - POSTGRES_PASSWORD_FILE=/run/secrets/db_admin_password
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - db.${DOMAINNAME}
+                ipv4_address: 172.25.0.10
+        depends_on:
+            #- etcd
+            - openldap-server
+            #- nginx-proxy
+
+
