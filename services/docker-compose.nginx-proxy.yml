@@ -26,6 +26,10 @@ services:
               target: /etc/nginx/certs/e3w.${DOMAINNAME}.key
             - source: e3w_ssl_crt
               target: /etc/nginx/certs/e3w.${DOMAINNAME}.crt
+            - source: metabase_ssl_key
+              target: /etc/nginx/certs/metabase.${DOMAINNAME}.key
+            - source: metabase_ssl_crt
+              target: /etc/nginx/certs/metabase.${DOMAINNAME}.crt
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
         networks:

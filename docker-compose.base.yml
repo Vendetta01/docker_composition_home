@@ -17,6 +17,8 @@ volumes:
         name: paperless-data
     paperless-media:
         name: paperless-media
+    db-data:
+        name: db-data
 
 secrets:
     etcd_client_ssl_key:
@@ -41,4 +43,10 @@ secrets:
         file: ./SSLCertificates/local/podewitz/e3w/e3w.podewitz.local.crt
     root_ca_crt:
         file: ./SSLCertificates/rootCA.crt
+    metabase_ssl_key:
+        file: ./SSLCertificates/local/podewitz/metabase/metabase.podewitz.local.key
+    metabase_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/metabase/metabase.podewitz.local.crt
 
+    db_admin_pw:
+        file: ./init/db/config/db_admin_pw
