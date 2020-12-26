@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eo pipefail
 
 if [[ $# -lt 2 ]]; then
   echo "Usage: docker_backup_volume volume_name backup_file_url [-h, --dereference]"
@@ -10,12 +11,14 @@ if [[ $(echo "${2:0:1}") != "/" ]]; then
   exit 2
 fi
 
-touch $2
+TMP_DIR=$(mktemp -d)
 
 if [[ $3 == "-h" || $3 == "--dereference" ]]; then
     ADD_TAR_OPTIONS="-h"
 fi
 
-docker run -it --rm -v $1:/volume -v $2:/backup/backup.tar.gz alpine \
+docker run -it --rm -v $1:/volume -v $TMP_DIR:/backup alpine \
   tar -cz $ADD_TAR_OPTIONS -f /backup/backup.tar.gz -C /volume ./
 
+cp $TMP_DIR/backup.tar.gz $2
+rm -rf $TMP_DIR

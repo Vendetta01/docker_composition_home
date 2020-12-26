@@ -1,0 +1,47 @@
+version: '3.4'
+
+services:
+    metabase:
+        image: metabase/metabase:${DOCKER_METABASE_VERSION}
+        #build: ./metabase-docker
+        container_name: metabase
+        hostname: metabase.${DOMAINNAME}
+        restart: unless-stopped
+        #healthcheck:
+        #    test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://paperless.podewitz.local:443"]
+        #    interval: 30s
+        #    timeout: 10s
+        #    retries: 5
+        secrets:
+            - source: etcd_client_ssl_key
+              target: /etc/ssl/etcd_client.key
+            - source: etcd_client_ssl_crt
+              target: /etc/ssl/etcd_client.crt
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+        env_file:
+            - docker-compose.base.env
+        environment:
+            - VIRTUAL_HOST=metabase.${DOMAINNAME}
+            - VIRTUAL_PORT=3000
+            #- VIRTUAL_PROTO=https
+            #- HTTPS_METHOD=noredirect
+            - SERVER_HOSTNAME=metabase.${DOMAINNAME}
+            - MB_DB_TYPE=postgres
+            - MB_DB_DBNAME=metabase-db
+            - MB_DB_PORT=5432
+            - MB_DB_USER=metabase
+            - MB_DB_PASS=metabase
+            - MB_DB_HOST=db.podewitz.local
+        #command: ["runserver", "--insecure", "--noreload", "0.0.0.0:8080"]
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - metabase.${DOMAINNAME}
+                ipv4_address: 172.25.0.11
+        depends_on:
+            - etcd
+            - openldap
+            - nginx-proxy
+            - db
+

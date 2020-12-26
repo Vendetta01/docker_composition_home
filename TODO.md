@@ -37,3 +37,4 @@
 * [ ] alternative: make container that interfaces with docker (has an installed docker daemon inside) and addresses backup etc.
 * [ ] implement switch between init from volume backups and init from files
 * [ ] phpldapadmin: tools missing for health check
+* [ ] openldap: we need the -h option for openldap-config to properly create a backup (symlinked file ldap.conf is otherwise missing)

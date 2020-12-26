@@ -1,8 +1,8 @@
 version: '3.4'
 services:
-    openldap-server:
+    openldap:
         image: osixia/openldap:${DOCKER_OPENLDAP_VERSION}
-        container_name: openldap-server
+        container_name: openldap
         restart: unless-stopped
         hostname: ldap.${DOMAINNAME}
         healthcheck:
@@ -17,10 +17,10 @@ services:
         volumes:
             - openldap-config:/etc/ldap
             - openldap-data:/var/lib/ldap
-            - ./conf/openldap-server/schema/sudo.schema:/container/service/slapd/assets/config/bootstrap/schema/sudo.schema
-            - ./init/openldap-server/backup/ldap_dump_latest.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/02_ldap_dump.ldif
-            - ./init/openldap-server/config/ldap_config.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/01_ldap_config.ldif
-            - ./conf/openldap-server/env/def-env.yaml:/container/environment/01-custom/env.yaml
+            - ./conf/openldap/schema/sudo.schema:/container/service/slapd/assets/config/bootstrap/schema/sudo.schema
+            - ./init/openldap/backup/ldap_dump_latest.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/02_ldap_dump.ldif
+            - ./init/openldap/config/ldap_config.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/01_ldap_config.ldif
+            - ./conf/openldap/env/def-env.yaml:/container/environment/01-custom/env.yaml
         secrets:
             - source: ldap_ssl_key
               target: /container/service/slapd/assets/certs/ldap_ssl.key
