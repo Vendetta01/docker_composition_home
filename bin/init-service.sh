@@ -80,11 +80,16 @@ fi
 vol_count=0
 for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
     vol_name=$(cat $VOLUMES_YAML_FILE | shyaml get-value volumes.${key}.name)
+    backup_file_url=${BACKUP_DIR}/${vol_name}_latest.tar.gz
     if [[ "$vol_name" =~ ^$SERVICE_NAME* ]]; then
-	echo "    -> ${vol_name}"
-	$RESTORE ${vol_name} ${BACKUP_DIR}/${vol_name}_latest.tar.gz
-	#((vol_count++)) # sets exit code in combination with set -e
-	let "vol_count=vol_count+1"
+	if [[ -f "$backup_file_url" ]]; then
+	    echo "    -> ${vol_name}"
+	    $RESTORE ${vol_name} ${BACKUP_DIR}/${vol_name}_latest.tar.gz
+	    #((vol_count++)) # sets exit code in combination with set -e
+	    let "vol_count=vol_count+1"
+	else
+	    echo "    -> ${vol_name}: Skipped, ${backup_file_url} not present"
+	fi
     fi
 done
 
