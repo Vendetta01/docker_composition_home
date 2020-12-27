@@ -13,7 +13,6 @@ services:
             timeout: 10s
             retries: 5
         volumes:
-            - paperless-data:/usr/src/paperless/data
             - paperless-media:/usr/src/paperless/media
             - /mnt/hdd/paperless_data/consume:/consume
             # Likewise, you can add a local path to mount a directory for
@@ -57,5 +56,6 @@ services:
             - etcd
             - openldap
             - nginx-proxy
+            - db
 
 

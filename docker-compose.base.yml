@@ -13,8 +13,6 @@ volumes:
         name: openldap-config
     openldap-data:
         name: openldap-data
-    paperless-data:
-        name: paperless-data
     paperless-media:
         name: paperless-media
     db-data:
