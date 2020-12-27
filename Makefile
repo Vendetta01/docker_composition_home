@@ -1,5 +1,5 @@
 
-SERVICES := etcd openldap phpldapadmin e3w lum nginx-proxy dnsmasq paperless metabase db
+SERVICES := etcd openldap phpldapadmin e3w lum nginx-proxy dnsmasq paperless metabase db adminer
 
 RUN_SERVICES := $(SERVICES:%=run-%)
 CLEAN_RUN_SERVICES := $(SERVICES:%=clean-run-%)

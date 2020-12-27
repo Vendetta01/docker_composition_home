@@ -1,0 +1,44 @@
+version: '3.4'
+
+services:
+    adminer:
+        image: adminer:${DOCKER_ADMINER_VERSION}
+        #build: ./adminer-docker
+        container_name: adminer
+        hostname: adminer.${DOMAINNAME}
+        restart: unless-stopped
+        #healthcheck:
+        #    test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://paperless.podewitz.local:443"]
+        #    interval: 30s
+        #    timeout: 10s
+        #    retries: 5
+        secrets:
+            - source: etcd_client_ssl_key
+              target: /etc/ssl/etcd_client.key
+            - source: etcd_client_ssl_crt
+              target: /etc/ssl/etcd_client.crt
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+            - db_admin_pw
+        env_file:
+            - docker-compose.base.env
+        environment:
+            - VIRTUAL_HOST=adminer.${DOMAINNAME}
+            - VIRTUAL_PORT=8080
+            #- VIRTUAL_PROTO=https
+            #- HTTPS_METHOD=noredirect
+            #- SERVER_HOSTNAME=metabase.${DOMAINNAME}
+            #- POSTGRES_USER=admin
+            #- POSTGRES_PASSWORD_FILE=/run/secrets/db_admin_pw
+            - ADMINER_DESIGN=pepa-linha-dark
+        #command: ["runserver", "--insecure", "--noreload", "0.0.0.0:8080"]
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - adminer.${DOMAINNAME}
+                ipv4_address: 172.25.0.12
+        depends_on:
+            - etcd
+            - openldap
+            - db
+
