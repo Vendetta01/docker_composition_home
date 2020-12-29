@@ -98,7 +98,7 @@ for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
 done
 
 
-if [[ "$vol_count" -lt 1 ]]; then
-    echo "Warning: service has no volumes to initialize"
-fi
+#if [[ "$vol_count" -lt 1 ]]; then
+#    echo "Warning: service has no volumes to initialize"
+#fi
 
