@@ -7,3 +7,5 @@ init
 lum-docker
 paperless-docker
 bugs
+.gitsecret/keys/random_seed
+!*.secret
