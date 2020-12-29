@@ -30,6 +30,6 @@ services:
                     - phpldapadmin.${DOMAINNAME}
                 ipv4_address: 172.25.0.5
         depends_on:
-            - openldap
+            - ldap
             - nginx-proxy
 

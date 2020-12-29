@@ -1,8 +1,8 @@
 version: '3.4'
 services:
-    openldap:
+    ldap:
         image: osixia/openldap:${DOCKER_OPENLDAP_VERSION}
-        container_name: openldap
+        container_name: ldap
         restart: unless-stopped
         hostname: ldap.${DOMAINNAME}
         healthcheck:
@@ -15,8 +15,8 @@ services:
             - "389:389"
             - "636:636"
         volumes:
-            - openldap-config:/etc/ldap
-            - openldap-data:/var/lib/ldap
+            - ldap-config:/etc/ldap
+            - ldap-data:/var/lib/ldap
             - ./conf/openldap/schema/sudo.schema:/container/service/slapd/assets/config/bootstrap/schema/sudo.schema
             - ./init/openldap/backup/ldap_dump_latest.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/02_ldap_dump.ldif
             - ./init/openldap/config/ldap_config.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/01_ldap_config.ldif

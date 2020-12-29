@@ -9,14 +9,29 @@ networks:
 volumes:
     etcd-data:
         name: etcd-data
-    openldap-config:
-        name: openldap-config
-    openldap-data:
-        name: openldap-data
+        labels:
+            # do not init volume, instead init from conf dir
+            etcd-data.service_owner: "" #"etcd"
+    ldap-config:
+        name: ldap-config
+        labels:
+            ldap-config.service_owner: "ldap"
+    ldap-data:
+        name: ldap-data
+        labels:
+            ldap-data.service_owner: "ldap"
     paperless-media:
         name: paperless-media
+        labels:
+            paperless-media.service_owner: "paperless"
     db-data:
         name: db-data
+        labels:
+            db-data.service_owner: "db"
+    db-admin-data:
+        name: db-admin-data
+        labels:
+            db-admin-data.service_owner: "db-admin"
 
 secrets:
     etcd_client_ssl_key:
@@ -45,6 +60,10 @@ secrets:
         file: ./SSLCertificates/local/podewitz/metabase/metabase.podewitz.local.key
     metabase_ssl_crt:
         file: ./SSLCertificates/local/podewitz/metabase/metabase.podewitz.local.crt
+    db-admin_ssl_key:
+        file: ./SSLCertificates/local/podewitz/db-admin/db-admin.podewitz.local.key
+    db-admin_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/db-admin/db-admin.podewitz.local.crt
 
     db_admin_pw:
         file: ./init/db/config/db_admin_pw

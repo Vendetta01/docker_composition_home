@@ -30,6 +30,10 @@ services:
               target: /etc/nginx/certs/metabase.${DOMAINNAME}.key
             - source: metabase_ssl_crt
               target: /etc/nginx/certs/metabase.${DOMAINNAME}.crt
+            - source: db-admin_ssl_key
+              target: /etc/nginx/certs/db-admin.${DOMAINNAME}.key
+            - source: db-admin_ssl_crt
+              target: /etc/nginx/certs/db-admin.${DOMAINNAME}.crt
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
         networks:

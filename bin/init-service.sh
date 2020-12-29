@@ -79,11 +79,15 @@ fi
 # init volumes
 vol_count=0
 for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
-    vol_name=$(cat $VOLUMES_YAML_FILE | shyaml get-value volumes.${key}.name)
+    vol_name=$(cat $VOLUMES_YAML_FILE | \
+	shyaml get-value volumes.${key}.name)
+    vol_owner=$(cat $VOLUMES_YAML_FILE | \
+	shyaml get-value volumes.${key}.labels.${key}\\.service_owner)
     backup_file_url=${BACKUP_DIR}/${vol_name}_latest.tar.gz
-    if [[ "$vol_name" =~ ^$SERVICE_NAME* ]]; then
+    if [[ "$vol_owner" == "$SERVICE_NAME" ]]; then
 	if [[ -f "$backup_file_url" ]]; then
 	    echo "    -> ${vol_name}"
+	    #create_volume "${vol_name}"
 	    $RESTORE ${vol_name} ${BACKUP_DIR}/${vol_name}_latest.tar.gz
 	    #((vol_count++)) # sets exit code in combination with set -e
 	    let "vol_count=vol_count+1"
