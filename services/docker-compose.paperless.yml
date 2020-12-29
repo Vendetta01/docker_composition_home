@@ -46,7 +46,6 @@ services:
             #- VIRTUAL_PROTO=https
             #- HTTPS_METHOD=noredirect
             - SERVER_HOSTNAME=paperless.${DOMAINNAME}
-        #command: ["runserver", "--insecure", "--noreload", "0.0.0.0:8080"]
         networks:
             podewitz_local_net:
                 aliases:
@@ -54,7 +53,7 @@ services:
                 ipv4_address: 172.25.0.8
         depends_on:
             - etcd
-            - openldap
+            - ldap
             - nginx-proxy
             - db
 

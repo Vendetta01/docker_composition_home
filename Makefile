@@ -1,5 +1,5 @@
 
-SERVICES := etcd openldap phpldapadmin e3w lum nginx-proxy dnsmasq paperless metabase db
+SERVICES := etcd ldap phpldapadmin e3w lum nginx-proxy dnsmasq paperless metabase db db-admin
 
 RUN_SERVICES := $(SERVICES:%=run-%)
 CLEAN_RUN_SERVICES := $(SERVICES:%=clean-run-%)
@@ -50,6 +50,8 @@ init: $(INIT_SERVICES)
 
 $(INIT_SERVICES):
 	@echo "Initializing $(@:init-%=%)..."
+#       start service to properly create volume from config
+	@docker-compose $(COMPOSE_FILES) up --no-start $(@:init-%=%)
 	@/bin/bash ./bin/init-service.sh $(@:init-%=%)
 
 stop:

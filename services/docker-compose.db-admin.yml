@@ -1,20 +1,19 @@
 version: '3.4'
 
 services:
-    db:
-        image: postgres:${DOCKER_POSTGRES_VERSION}
-        #build: ./postgres-docker
-        container_name: db
-        hostname: db.${DOMAINNAME}
+    db-admin:
+        image: dpage/pgadmin4:${DOCKER_PGADMIN_VERSION}
+        #build: ./pgadmin-docker
+        container_name: db-admin
+        hostname: db-admin.${DOMAINNAME}
         restart: unless-stopped
         healthcheck:
-        #    test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://paperless.podewitz.local:443"]
-            test: ["CMD", "pg_isready", "-U", "admin"]
+            test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://db-admin.podewitz.local:443"]
             interval: 30s
             timeout: 10s
             retries: 5
         volumes:
-            - db-data:/var/lib/postgresql/data
+            - db-admin-data:/var/lib/pgadmin
         secrets:
             - source: etcd_client_ssl_key
               target: /etc/ssl/etcd_client.key
@@ -22,18 +21,21 @@ services:
               target: /etc/ssl/etcd_client.crt
             - source: root_ca_crt
               target: /etc/ssl/root_ca.crt
-            - db_admin_pw
         env_file:
             - docker-compose.base.env
         environment:
-            - POSTGRES_USER=admin
-            - POSTGRES_PASSWORD_FILE=/run/secrets/db_admin_pw
+            - VIRTUAL_HOST=db-admin.${DOMAINNAME}
+            - VIRTUAL_PORT=80
+            - PGADMIN_DEFAULT_EMAIL=nils.podewitz@googlemail.com
+            - PGADMIN_DEFAULT_PASSWORD=TOCHANGE
         networks:
             podewitz_local_net:
                 aliases:
                     - db.${DOMAINNAME}
-                ipv4_address: 172.25.0.10
+                ipv4_address: 172.25.0.12
         depends_on:
             - etcd
             - ldap
+            - nginx-proxy
+            - db
 

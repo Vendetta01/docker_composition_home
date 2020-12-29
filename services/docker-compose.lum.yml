@@ -52,6 +52,6 @@ services:
                     - lum.${DOMAINNAME}
                 ipv4_address: 172.25.0.6
         depends_on:
-            - openldap
+            - ldap
             - nginx-proxy
 
