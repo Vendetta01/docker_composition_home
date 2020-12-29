@@ -5,11 +5,11 @@ services:
         container_name: phpldapadmin
         restart: unless-stopped
         hostname: phpldapadmin.${DOMAINNAME}
-        #healthcheck:
-        #    test: ["CMD", "curl" , "-f", "http://paperless.podewitz.local:80"]
-        #    interval: 30s
-        #    timeout: 10s
-        #    retries: 5
+        healthcheck:
+            test: ["CMD", "curl" , "-f", "http://phpldapadmin.podewitz.local:80"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
         command: --copy-service
         #ports:
         #    - "8080:80"

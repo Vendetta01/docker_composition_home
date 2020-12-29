@@ -3,7 +3,7 @@
 * [ ] How to resolve domain names (eg. ldap.podewitz.local) in local network so that it is routed to baernas (use dnsmasq-docker) -> dnsmasq-docker as primary dns in router
 * [X] Include paperless in docker-compose.yml
 * [X] convert paperless to use real webserver (nginx/gunicorn)
-* [ ] use real database server (postgres) for paperless (maybe?)
+* [X] use real database server (postgres) for paperless (maybe?)
 * [X] How to properly use confd (in containers?) -> first set up confd through environment variables using itself (-backend env -onetime), then start confd and let it configure the rest (through whatever backend is initially set)
 * [X] GUI for etcd
 * [X] reverse-proxy for bundeling all webapps together (for now only phpldapadmin and paperless)
@@ -33,8 +33,17 @@
 * [X] wait-for-it.sh needs a URL, which should be provided to all services in the same way (not hardcoded into environment.sh)
 * [X] rewrite service definitions so that all services use one source for the confd configuration (env vars defined for all services)
 * [ ] refactor lum-docker to use confd for configuration
-* [ ] rework backup mechanism for openldap: backup scripts run an exec on the actual service container; service needs host mount for backup folder
-* [ ] alternative: make container that interfaces with docker (has an installed docker daemon inside) and addresses backup etc.
+* [X] rework backup mechanism for openldap: backup scripts run an exec on the actual service container; service needs host mount for backup folder -> deprecated
+* [X] alternative: make container that interfaces with docker (has an installed docker daemon inside) and addresses backup etc. -> deprecated
+* [X] all named volumes are automatically initialized from backup if configured in docker-compose.base.yml and a backup file exists
 * [ ] implement switch between init from volume backups and init from files
 * [ ] phpldapadmin: tools missing for health check
 * [ ] openldap: we need the -h option for openldap-config to properly create a backup (symlinked file ldap.conf is otherwise missing)
+* [ ] rework structure (is this useful???):
+    - [ ] base project has only essential services: ldap and etcd
+    - [ ] all other services are another project which takes its configuration from etcd
+* [ ] add bookstack service
+* [ ] enhance images for db-admin, db and metabase to use confd for configuration (for metabase this is probabely not possible)
+* [ ] rename phpldapadmin to ldap-admin to make it analog to db and hide the "implementation detail" that it uses phpldapadmin
+* [ ] rename nginx-proxy to proxy to hide "implementation detail" that it uses nginx
+* [ ] rename etcd to config (maybe, see above for reason)
