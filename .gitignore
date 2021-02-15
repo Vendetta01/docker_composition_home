@@ -7,4 +7,4 @@ paperless-docker
 bugs
 .gitsecret/keys/random_seed
 !*.secret
-*_latest.tar.gz
+backup_volumes/
