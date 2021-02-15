@@ -1,11 +1,10 @@
 etcd-docker
 SSLCertificates
-conf
 dnsmasq-docker
 e3w-docker
-init
 lum-docker
 paperless-docker
 bugs
 .gitsecret/keys/random_seed
 !*.secret
+*_latest.tar.gz

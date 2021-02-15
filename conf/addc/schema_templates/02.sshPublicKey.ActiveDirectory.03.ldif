@@ -1,0 +1,7 @@
+dn: CN=User,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+changetype: modify
+replace: auxiliaryClass
+auxiliaryClass: ldapPublicKey
+auxiliaryClass: posixAccount
+auxiliaryClass: shadowAccount
+-

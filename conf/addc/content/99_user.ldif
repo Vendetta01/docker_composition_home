@@ -1,0 +1,290 @@
+dn: CN=Domain Users,CN=Users,DC=podewitz,DC=de
+changetype: modify
+add: gidNumber
+gidNumber: 100001
+
+
+#############################
+# User
+dn: CN=user_auth,CN=Users,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: user
+cn: user_auth
+instanceType: 4
+whenCreated: 20200703131956.0Z
+displayName: user_auth
+uSNCreated: 4134
+name: user_auth
+#objectGUID:: jwjoo+bznkqMOJtEet8JxQ==
+badPwdCount: 0
+codePage: 0
+countryCode: 0
+badPasswordTime: 0
+lastLogoff: 0
+lastLogon: 0
+#primaryGroupID: 513
+#objectSid:: AQUAAAAAAAUVAAAABqO8u9Na63BbzeHdUQQAAA==
+accountExpires: 9223372036854775807
+logonCount: 0
+sAMAccountName: user_auth
+#sAMAccountType: 805306368
+userPrincipalName: user_auth@podewitz.de
+objectCategory: CN=Person,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+#pwdLastSet: 132382559969825090
+userAccountControl: 66048
+description: Service user for user authentication ldap binds
+lastLogonTimestamp: 132383331498980990
+whenChanged: 20200704104549.0Z
+uSNChanged: 4256
+distinguishedName: CN=user_auth,CN=Users,DC=podewitz,DC=de
+
+dn: CN=Nils Podewitz,CN=Users,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: user
+cn: Nils Podewitz
+sn: Podewitz
+instanceType: 4
+whenCreated: 20200703113448.0Z
+uSNCreated: 4117
+name: Nils Podewitz
+#objectGUID:: RHGAZSaWTUGYGnBc6Ho9Bw==
+badPwdCount: 0
+codePage: 0
+countryCode: 0
+badPasswordTime: 0
+lastLogoff: 0
+#primaryGroupID: 513
+#objectSid:: AQUAAAAAAAUVAAAABqO8u9Na63BbzeHdUAQAAA==
+accountExpires: 9223372036854775807
+sAMAccountName: npodewitz
+#sAMAccountType: 805306368
+userPrincipalName: npodewitz@podewitz.de
+objectCategory: CN=Person,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+#pwdLastSet: 132382496884849500
+userAccountControl: 512
+lastLogonTimestamp: 132382497001097190
+gidNumber: 100001
+uidNumber: 100001
+givenName: Dr. Nils
+initials: NP
+mail: nils.podewitz@googlemail.com
+#memberOf: CN=ad_admins,CN=Users,DC=podewitz,DC=de
+#memberOf: CN=e3w_access,CN=Users,DC=podewitz,DC=de
+#memberOf: CN=paperless_access,CN=Users,DC=podewitz,DC=de
+displayName: Dr. Nils Podewitz
+whenChanged: 20200705175718.0Z
+uSNChanged: 4344
+lastLogon: 132384463432740860
+logonCount: 31
+homeDirectory: /home/npodewitz
+uid: npodewitz
+homePhone: +49 40 33489133
+homePostalAddress: Osterbrook 13a, 20537 Hamburg, Germany
+loginShell: /bin/bash
+mobile: +49 160 1630114
+distinguishedName: CN=Nils Podewitz,CN=Users,DC=podewitz,DC=de
+
+dn: CN=Karolin Podewitz,CN=Users,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: user
+sn: Podewitz
+instanceType: 4
+whenCreated: 20200705175216.0Z
+uSNCreated: 4329
+#objectGUID:: 29Mr6/9SIUezBIuLXxR1Yg==
+badPwdCount: 0
+codePage: 0
+countryCode: 0
+badPasswordTime: 0
+lastLogoff: 0
+lastLogon: 0
+#primaryGroupID: 513
+#objectSid:: AQUAAAAAAAUVAAAABqO8u9Na63BbzeHdVQQAAA==
+accountExpires: 9223372036854775807
+logonCount: 0
+sAMAccountName: kpodewitz
+#sAMAccountType: 805306368
+userPrincipalName: kpodewitz@podewitz.de
+objectCategory: CN=Person,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+uid: kpodewitz
+uidNumber: 100002
+gidNumber: 100001
+#pwdLastSet: 132384451369325390
+userAccountControl: 512
+#memberOf: CN=e3w_access,CN=Users,DC=podewitz,DC=de
+#memberOf: CN=paperless_access,CN=Users,DC=podewitz,DC=de
+givenName: Karolin
+initials: KP
+displayName: Karolin Podewitz
+mail: karolin.podewitz@gmail.com
+cn: Karolin Podewitz
+name: Karolin Podewitz
+whenChanged: 20200705175653.0Z
+uSNChanged: 4343
+homePhone: +49 40 33489133
+homePostalAddress: Osterbrook 13a, 20537 Hamburg, Germany
+loginShell: /bin/bash
+mobile: +49 176 22180260
+distinguishedName: CN=Karolin Podewitz,CN=Users,DC=podewitz,DC=de
+
+
+#############################
+# Groups
+dn: CN=paperless_access,CN=Users,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: group
+cn: paperless_access
+instanceType: 4
+whenCreated: 20200705175353.0Z
+uSNCreated: 4338
+name: paperless_access
+#objectGUID:: PagNCwlMbEWG8xvYz1QG8A==
+#objectSid:: AQUAAAAAAAUVAAAABqO8u9Na63BbzeHdVwQAAA==
+sAMAccountName: paperless_access
+#sAMAccountType: 268435456
+groupType: -2147483646
+objectCategory: CN=Group,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+description: Grant access to paperless
+member: CN=Nils Podewitz,CN=Users,DC=podewitz,DC=de
+member: CN=Karolin Podewitz,CN=Users,DC=podewitz,DC=de
+gidNumber: 100002
+whenChanged: 20200705180223.0Z
+uSNChanged: 4350
+distinguishedName: CN=paperless_access,CN=Users,DC=podewitz,DC=de
+
+dn: CN=ad_admins,CN=Users,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: group
+cn: ad_admins
+instanceType: 4
+whenCreated: 20200705175303.0Z
+uSNCreated: 4335
+name: ad_admins
+#objectGUID:: U1V7P3lYdUC9UBf3hgPOVQ==
+#objectSid:: AQUAAAAAAAUVAAAABqO8u9Na63BbzeHdVgQAAA==
+sAMAccountName: ad_admins
+#sAMAccountType: 268435456
+groupType: -2147483646
+objectCategory: CN=Group,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+description: Active Directory Admins
+whenChanged: 20200705175334.0Z
+member: CN=Nils Podewitz,CN=Users,DC=podewitz,DC=de
+uSNChanged: 4337
+distinguishedName: CN=ad_admins,CN=Users,DC=podewitz,DC=de
+
+dn: CN=e3w_access,CN=Users,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: group
+cn: e3w_access
+instanceType: 4
+whenCreated: 20200705175407.0Z
+uSNCreated: 4339
+name: e3w_access
+#objectGUID:: B1ZfcCZhnE+Xc0jqeCZtXA==
+#objectSid:: AQUAAAAAAAUVAAAABqO8u9Na63BbzeHdWAQAAA==
+sAMAccountName: e3w_access
+#sAMAccountType: 268435456
+groupType: -2147483646
+objectCategory: CN=Group,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+description: Grant access to e3w
+member: CN=Nils Podewitz,CN=Users,DC=podewitz,DC=de
+member: CN=Karolin Podewitz,CN=Users,DC=podewitz,DC=de
+gidNumber: 100005
+whenChanged: 20200705180140.0Z
+uSNChanged: 4349
+distinguishedName: CN=e3w_access,CN=Users,DC=podewitz,DC=de
+
+
+
+
+#############################
+# Group membership
+#dn: CN=paperless_access,CN=Users,DC=podewitz,DC=de
+#changetype: modify
+#attribute: member
+#member: CN=Nils Podewitz,CN=Users,DC=podewitz,DC=de
+#-
+#attribute: member
+#member: CN=Karolin Podewitz,CN=Users,DC=podewitz,DC=de
+
+#dn: CN=ad_admins,CN=Users,DC=podewitz,DC=de
+#changetype: modify
+#attribute: modify
+#member: CN=Nils Podewitz,CN=Users,DC=podewitz,DC=de
+
+#dn: CN=e3w_access,CN=Users,DC=podewitz,DC=de
+#changetype: modify
+#attribute: member
+#member: CN=Nils Podewitz,CN=Users,DC=podewitz,DC=de
+#-
+#attribute: member
+#member: CN=Karolin Podewitz,CN=Users,DC=podewitz,DC=de
+
+
+#############################
+# Sudoers
+dn: OU=sudoers,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: organizationalUnit
+ou: sudoers
+instanceType: 4
+whenCreated: 20200703113930.0Z
+uSNCreated: 4124
+name: sudoers
+#objectGUID:: J0FSde3I9USdaEBBfPio1A==
+objectCategory: CN=Organizational-Unit,CN=Schema,CN=Configuration,DC=podewitz,
+ DC=de
+whenChanged: 20200704103309.0Z
+uSNChanged: 4237
+distinguishedName: OU=sudoers,DC=podewitz,DC=de
+
+dn: CN=defaults,OU=sudoers,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: sudoRole
+instanceType: 4
+whenCreated: 20200703114429.0Z
+uSNCreated: 4129
+#objectGUID:: RFG7XHc8z06HyEoUGyC4wQ==
+objectCategory: CN=sudoRole,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+sudoOption: !authenticate;env_keep+=SSH_AUTH_SOCK
+cn: defaults
+name: defaults
+whenChanged: 20200705174302.0Z
+uSNChanged: 4323
+distinguishedName: CN=defaults,OU=sudoers,DC=podewitz,DC=de
+
+dn: CN=npodewitz,OU=sudoers,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: sudoRole
+cn: npodewitz
+instanceType: 4
+whenCreated: 20200703132339.0Z
+uSNCreated: 4143
+name: npodewitz
+#objectGUID:: TWQiHSm97UOHzjMwAnuk5A==
+objectCategory: CN=sudoRole,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+sudoUser: npodewitz
+sudoRunAsUser: ALL
+sudoOrder: 3
+sudoHost: ALL
+sudoCommand: ALL
+description: sudo entry for user npodewitz
+whenChanged: 20200703132550.0Z
+uSNChanged: 4146
+distinguishedName: CN=npodewitz,OU=sudoers,DC=podewitz,DC=de
+

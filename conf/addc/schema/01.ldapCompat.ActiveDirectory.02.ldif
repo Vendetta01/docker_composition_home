@@ -1,0 +1,16 @@
+dn: CN=ldapCompatPerson,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: classSchema
+governsID: 1.3.6.1.4.1.7165.4.2.3
+cn: ldapCompatPerson
+name: ldapCompatPerson
+description: MANDATORY: Unix LDAP compat person
+lDAPDisplayName: ldapCompatPerson
+subClassOf: top
+objectClassCategory: 3
+objectCategory: CN=Class-Schema,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+defaultObjectCategory: CN=ldapCompatPerson,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+mayContain: nsUniqueId
+mayContain: entryUUID
+schemaIDGUID:: 86ZQNhW9JE6cXG/Mb03K4Q==

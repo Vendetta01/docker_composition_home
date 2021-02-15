@@ -1,0 +1,31 @@
+dn: CN=nsUniqueId,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: attributeSchema
+attributeID: 2.16.840.1.113730.3.1.542
+cn: nsUniqueId
+name: nsUniqueId
+lDAPDisplayName: nsUniqueId
+description: MANDATORY: nsUniqueId compatability
+attributeSyntax: 2.5.5.10
+oMSyntax: 4
+isSingleValued: TRUE
+searchFlags: 9
+objectCategory: CN=Attribute-Schema,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+schemaIDGUID:: PTIIe1afdUKi0To2hxU1zg==
+
+dn: CN=entryUUID,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+changetype: add
+objectClass: top
+objectClass: attributeSchema
+attributeID: 1.3.6.1.1.16.4
+cn: entryUUID
+name: entryUUID
+lDAPDisplayName: entryUUID
+description: MANDATORY: entryUUID compatability
+attributeSyntax: 2.5.5.10
+oMSyntax: 4
+isSingleValued: TRUE
+searchFlags: 9
+objectCategory: CN=Attribute-Schema,CN=Schema,CN=Configuration,DC=podewitz,DC=de
+schemaIDGUID:: mqcwg4e++kmQIA2VphN1oQ==
