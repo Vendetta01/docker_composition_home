@@ -6,5 +6,7 @@ lum-docker
 paperless-docker
 bugs
 .gitsecret/keys/random_seed
+init/*
+conf/*
 !*.secret
 backup_volumes/
