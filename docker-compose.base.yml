@@ -24,6 +24,10 @@ volumes:
         name: paperless-media
         labels:
             paperless-media.service_owner: "paperless"
+    paperless-data:
+        name: paperless-data
+        labels:
+            paperless-data.service_owner: "paperless"
     db-data:
         name: db-data
         labels:
