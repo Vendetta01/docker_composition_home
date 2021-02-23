@@ -79,8 +79,9 @@ fi
 # init volumes
 vol_count=0
 for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
+    service_owner=$(cat $VOLUMES_YAML_FILE | shyaml get-value volumes.${key}.labels.${key}__service_owner)
     vol_name=$(cat $VOLUMES_YAML_FILE | shyaml get-value volumes.${key}.name)
-    if [[ "$vol_name" =~ ^$SERVICE_NAME* ]]; then
+    if [[ "$service_owner" = "$SERVICE_NAME" ]]; then
 	echo "    -> ${vol_name}..."
 	$BACKUP ${vol_name} ${BACKUP_DIR}/${vol_name}_$(date +"%Y%m%d%H%M%S").tar.gz
 	#((vol_count++)) # produces error in combination with set -e

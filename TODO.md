@@ -47,4 +47,5 @@
 * [ ] rename phpldapadmin to ldap-admin to make it analog to db and hide the "implementation detail" that it uses phpldapadmin
 * [ ] rename nginx-proxy to proxy to hide "implementation detail" that it uses nginx
 * [ ] rename etcd to config (maybe, see above for reason)
-* [ ] Backup of db also backs up db-admin, that is wrong!
+* [X] Backup of db also backs up db-admin, that is wrong!
+* [ ] Add automatic switch of latest backup link in backup-service.sh
