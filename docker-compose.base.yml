@@ -11,19 +11,19 @@ volumes:
         name: etcd-data
         labels:
             # do not init volume, instead init from conf dir
-            etcd-data__service_owner: "" #"etcd"
+            etcd-data.service_owner: "" #"etcd"
     ldap-config:
         name: ldap-config
         labels:
-            ldap-config__service_owner: "ldap"
+            ldap-config.service_owner: "ldap"
     ldap-data:
         name: ldap-data
         labels:
-            ldap-data__service_owner: "ldap"
+            ldap-data.service_owner: "ldap"
     paperless-media:
         name: paperless-media
         labels:
-            paperless-media__service_owner: "paperless"
+            paperless-media.service_owner: "paperless"
 #    paperless-data:
 #        name: paperless-data
 #        labels:
@@ -31,11 +31,11 @@ volumes:
     db-data:
         name: db-data
         labels:
-            db-data__service_owner: "db"
+            db-data.service_owner: "db"
     db-admin-data:
         name: db-admin-data
         labels:
-            db-admin-data__service_owner: "db-admin"
+            db-admin-data.service_owner: "db-admin"
 
 secrets:
     etcd_client_ssl_key:

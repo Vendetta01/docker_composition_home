@@ -79,7 +79,7 @@ fi
 # init volumes
 vol_count=0
 for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
-    service_owner=$(cat $VOLUMES_YAML_FILE | shyaml get-value volumes.${key}.labels.${key}__service_owner)
+    service_owner=$(cat $VOLUMES_YAML_FILE | shyaml get-value "volumes.${key}.labels.${key}\.service_owner")
     vol_name=$(cat $VOLUMES_YAML_FILE | shyaml get-value volumes.${key}.name)
     if [[ "$service_owner" = "$SERVICE_NAME" ]]; then
 	echo "    -> ${vol_name}..."
