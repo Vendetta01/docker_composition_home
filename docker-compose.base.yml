@@ -68,6 +68,10 @@ secrets:
         file: ./SSLCertificates/local/podewitz/db-admin/db-admin.podewitz.local.key
     db-admin_ssl_crt:
         file: ./SSLCertificates/local/podewitz/db-admin/db-admin.podewitz.local.crt
+    home_ssl_key:
+        file: ./SSLCertificates/local/podewitz/podewitz.local.key
+    home_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/podewitz.local.crt
 
     db_admin_pw:
         file: ./init/db/config/db_admin_pw

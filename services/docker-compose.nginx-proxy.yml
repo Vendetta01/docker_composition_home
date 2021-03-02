@@ -34,6 +34,11 @@ services:
               target: /etc/nginx/certs/db-admin.${DOMAINNAME}.key
             - source: db-admin_ssl_crt
               target: /etc/nginx/certs/db-admin.${DOMAINNAME}.crt
+            - source: home_ssl_key
+              target: /etc/nginx/certs/${DOMAINNAME}.key
+            - source: home_ssl_crt
+              target: /etc/nginx/certs/${DOMAINNAME}.crt
+
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
             - ./init/proxy/config/default:/etc/nginx/vhost.d/default
