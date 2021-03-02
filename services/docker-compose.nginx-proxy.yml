@@ -12,7 +12,7 @@ services:
         env_file:
             - docker-compose.base.env
         environment:
-            - DEFAULT_HOST=lum.${DOMAINNAME}
+            - DEFAULT_HOST=${DOMAINNAME}
         secrets:
             - source: lum_ssl_key
               target: /etc/nginx/certs/lum.${DOMAINNAME}.key
@@ -36,6 +36,7 @@ services:
               target: /etc/nginx/certs/db-admin.${DOMAINNAME}.crt
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
+            - ./init/proxy/config/default:/etc/nginx/vhost.d/default
         networks:
             podewitz_local_net:
                 aliases:

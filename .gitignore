@@ -4,6 +4,7 @@ dnsmasq-docker
 e3w-docker
 lum-docker
 paperless-docker
+landing_page-docker
 bugs
 .gitsecret/keys/random_seed
 init/*
