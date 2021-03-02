@@ -1,0 +1,24 @@
+version: '3.4'
+services:
+    home:
+        image: npodewitz/landing_page:latest
+        container_name: home
+        restart: unless-stopped
+        hostname: home.${DOMAINNAME}
+        #healthcheck
+        env_file:
+            - docker-compose.base.env
+        environment:
+            - VIRTUAL_HOST=${DOMAINNAME}
+            - VIRTUAL_PORT=8000
+            - DOCKER_HOST=unix://tmp/docker.sock
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - home.${DOMAINNAME}
+                ipv4_address: 172.25.0.13
+        depends_on:
+          - nginx-proxy
+
