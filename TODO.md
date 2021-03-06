@@ -38,7 +38,7 @@
 * [X] all named volumes are automatically initialized from backup if configured in docker-compose.base.yml and a backup file exists
 * [ ] implement switch between init from volume backups and init from files
 * [ ] phpldapadmin: tools missing for health check
-* [ ] openldap: we need the -h option for openldap-config to properly create a backup (symlinked file ldap.conf is otherwise missing)
+* [ ] openldap: we need the -h option for openldap-config to properly create a backup (symlinked file ldap.conf is otherwise missing) -> add new label with backup options -> does not work, needs online backup which has to be configured differently or script has to be changed to read mount path etc.
 * [ ] rework structure (is this useful???):
     - [ ] base project has only essential services: ldap and etcd
     - [ ] all other services are another project which takes its configuration from etcd
@@ -49,3 +49,5 @@
 * [ ] rename etcd to config (maybe, see above for reason)
 * [X] Backup of db also backs up db-admin, that is wrong!
 * [ ] Add automatic switch of latest backup link in backup-service.sh
+* [ ] dnsmasq: change etcd entries: entry name is address and if empty take the default ip otherwise take ip inside key
+* [ ] add small container to update default ip of services in etcd (somehow watch host ip adress of specified network device)
