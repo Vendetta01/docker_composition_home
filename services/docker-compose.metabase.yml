@@ -24,6 +24,7 @@ services:
         environment:
             - VIRTUAL_HOST=metabase.${DOMAINNAME}
             - VIRTUAL_PORT=3000
+            - VIRTUAL_ICON=analytics
             - SERVER_HOSTNAME=metabase.${DOMAINNAME}
             - MB_DB_TYPE=postgres
             - MB_DB_DBNAME=metabase-db

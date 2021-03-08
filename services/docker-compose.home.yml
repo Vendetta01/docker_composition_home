@@ -11,6 +11,7 @@ services:
         environment:
             - VIRTUAL_HOST=${DOMAINNAME}
             - VIRTUAL_PORT=8000
+            - BLACKLIST_NAMES=home
             - DOCKER_HOST=unix://tmp/docker.sock
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro

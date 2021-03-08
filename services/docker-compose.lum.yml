@@ -25,6 +25,7 @@ services:
         environment:
             - VIRTUAL_HOST=lum.${DOMAINNAME}
             - VIRTUAL_PORT=80
+            - VIRTUAL_ICON=manage_accounts
             #- VIRTUAL_PROTO=https
             - SERVER_HOSTNAME=lum.${DOMAINNAME}
             - LDAP_URI=ldaps://ldap.${DOMAINNAME}:636
