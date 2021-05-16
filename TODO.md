@@ -51,3 +51,4 @@
 * [ ] Add automatic switch of latest backup link in backup-service.sh
 * [ ] dnsmasq: change etcd entries: entry name is address and if empty take the default ip otherwise take ip inside key
 * [ ] add small container to update default ip of services in etcd (somehow watch host ip adress of specified network device)
+* [ ] add jupyter hub
