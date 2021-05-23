@@ -48,6 +48,10 @@ services:
             #- VIRTUAL_PROTO=https
             #- HTTPS_METHOD=noredirect
             - SERVER_HOSTNAME=paperless.${DOMAINNAME}
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.paperless.rule=Host(`paperless.${DOMAINNAME}`)"
+            - "traefik.http.routers.paperless.tls=true"
         networks:
             podewitz_local_net:
                 aliases:
@@ -56,7 +60,7 @@ services:
         depends_on:
             - etcd
             - ldap
-            - nginx-proxy
+            - reverse-proxy
             - db
 
 

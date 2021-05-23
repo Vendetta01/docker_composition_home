@@ -1,4 +1,9 @@
 *
-!*/
+!/etcd
+!/etcd/*
+!/openldap
+!/openldap/*
+!/reverse-proxy
+!/reverse-proxy/*
 !*.secret
 !.gitignore

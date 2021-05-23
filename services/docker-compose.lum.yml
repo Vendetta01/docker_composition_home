@@ -47,6 +47,10 @@ services:
             - LUM_ROOT_CRT_URL=/etc/ssl/root_ca.crt
             - LUM_SSL_KEY=/etc/ssl/lum.key
             - LUM_SSL_CRT=/etc/ssl/lum.crt
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.lum.rule=Host(`lum.${DOMAINNAME}`)"
+            - "traefik.http.routers.lum.tls=true"
         networks:
             podewitz_local_net:
                 aliases:
@@ -54,5 +58,5 @@ services:
                 ipv4_address: 172.25.0.6
         depends_on:
             - ldap
-            - nginx-proxy
+            - reverse-proxy
 

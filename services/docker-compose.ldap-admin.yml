@@ -1,18 +1,18 @@
 version: '3.4'
 services:
-    phpldapadmin:
+    ldap-admin:
         image: osixia/phpldapadmin:latest
-        container_name: phpldapadmin
+        container_name: ldap-admin
         restart: unless-stopped
-        hostname: phpldapadmin.${DOMAINNAME}
+        hostname: ldap-admin.${DOMAINNAME}
         healthcheck:
-            test: ["CMD", "curl" , "-f", "http://phpldapadmin.podewitz.local:80"]
+            test: ["CMD-SHELL", "[ $$(pgrep -u www-data -c -f /usr/sbin/apache2) -gt 0 ] || exit 1"]
             interval: 30s
             timeout: 10s
             retries: 5
         command: --copy-service
-        #ports:
-        #    - "8080:80"
+        expose:
+            - "80"
         secrets:
             - ldap_ssl_key
             - ldap_ssl_crt
@@ -22,15 +22,19 @@ services:
         environment:
             PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'ldaps://ldap.podewitz.local:636': [{'server': [{'port': 0}]}]}]"
             PHPLDAPADMIN_HTTPS: "false"
-            VIRTUAL_HOST: "phpldapadmin.${DOMAINNAME}"
-            VIRTUAL_PORT: "80"
-            VIRTUAL_ICON: "folder_shared"
+            #VIRTUAL_HOST: "ldap-admin.${DOMAINNAME}"
+            #VIRTUAL_PORT: "80"
+            #VIRTUAL_ICON: "folder_shared"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.ldap-admin.rule=Host(`ldap-admin.${DOMAINNAME}`)"
+            - "traefik.http.routers.ldap-admin.tls=true"
         networks:
             podewitz_local_net:
                 aliases:
-                    - phpldapadmin.${DOMAINNAME}
+                    - ldap-admin.${DOMAINNAME}
                 ipv4_address: 172.25.0.5
         depends_on:
             - ldap
-            - nginx-proxy
+            - reverse-proxy
 

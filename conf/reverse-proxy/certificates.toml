@@ -1,0 +1,27 @@
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/phpldapadmin.crt"
+    keyFile = "/etc/traefik/certs/phpldapadmin.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/metabase.crt"
+    keyFile = "/etc/traefik/certs/metabase.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/lum.crt"
+    keyFile = "/etc/traefik/certs/lum.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/paperless.crt"
+    keyFile = "/etc/traefik/certs/paperless.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/e3w.crt"
+    keyFile = "/etc/traefik/certs/e3w.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/db-admin.crt"
+    keyFile = "/etc/traefik/certs/db-admin.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/home.crt"
+    keyFile = "/etc/traefik/certs/home.key"
