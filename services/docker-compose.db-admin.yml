@@ -7,11 +7,11 @@ services:
         container_name: db-admin
         hostname: db-admin.${DOMAINNAME}
         restart: unless-stopped
-        healthcheck:
-            test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://db-admin.podewitz.local:443"]
-            interval: 30s
-            timeout: 10s
-            retries: 5
+        # healthcheck:
+        #     test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://db-admin.podewitz.local:443"]
+        #     interval: 30s
+        #     timeout: 10s
+        #     retries: 5
         volumes:
             - db-admin-data:/var/lib/pgadmin
         secrets:
@@ -29,6 +29,10 @@ services:
             - VIRTUAL_ICON=storage
             - PGADMIN_DEFAULT_EMAIL=nils.podewitz@googlemail.com
             - PGADMIN_DEFAULT_PASSWORD=TOCHANGE
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.db-admin.rule=Host(`db-admin.${DOMAINNAME}`)"
+            - "traefik.http.routers.db-admin.tls=true"
         networks:
             podewitz_local_net:
                 aliases:
@@ -37,6 +41,6 @@ services:
         depends_on:
             - etcd
             - ldap
-            - nginx-proxy
+            - reverse-proxy
             - db
 

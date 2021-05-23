@@ -13,6 +13,10 @@ services:
             - VIRTUAL_PORT=8000
             - BLACKLIST_NAMES=home
             - DOCKER_HOST=unix://tmp/docker.sock
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.home.rule=Host(`${DOMAINNAME}`)"
+            - "traefik.http.routers.home.tls=true"
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
         networks:
@@ -21,5 +25,5 @@ services:
                     - home.${DOMAINNAME}
                 ipv4_address: 172.25.0.13
         depends_on:
-          - nginx-proxy
+          - reverse-proxy
 
