@@ -2,37 +2,29 @@ version: '3.4'
 
 services:
     paperless:
-        image: npodewitz/paperless:latest
+        image: jonaswinkler/paperless-ng:${DOCKER_PAPERLESS_VERSION}
         #build: ./paperless-docker
         container_name: paperless
         hostname: paperless.${DOMAINNAME}
         restart: unless-stopped
+        ports:
+            - 8000:8000
         healthcheck:
-            test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://paperless.podewitz.local:443"]
+            test: ["CMD", "curl" , "-f", "http://localhost:8000"]
             interval: 30s
             timeout: 10s
             retries: 5
         volumes:
             - paperless-media:/usr/src/paperless/media
-            #- paperless-data:/usr/src/paperless/data
-            - /mnt/hdd/paperless_data/consume:/consume
+            - paperless-data:/usr/src/paperless/data
+            - /mnt/hdd/paperless_data/consume:/usr/src/paperless/consume
+            - /mnt/hdd/paperless_data/export:/usr/src/paperless/export
             # Likewise, you can add a local path to mount a directory for
             # exporting. This is not strictly needed for paperless to
             # function, only if you're exporting your files: uncomment
             # it and fill in a local path if you know you're going to
             # want to export your documents.
             # - /path/to/another/arbitrary/place:/export
-        secrets:
-            - source: etcd_client_ssl_key
-              target: /etc/ssl/etcd_client.key
-            - source: etcd_client_ssl_crt
-              target: /etc/ssl/etcd_client.crt
-            - source: root_ca_crt
-              target: /etc/ssl/root_ca.crt
-            - source: paperless_ssl_key
-              target: /etc/ssl/paperless.podewitz.local.key
-            - source: paperless_ssl_crt
-              target: /etc/ssl/paperless.podewitz.local.crt
         env_file:
             - docker-compose.base.env
         #env_file:
@@ -48,6 +40,16 @@ services:
             #- VIRTUAL_PROTO=https
             #- HTTPS_METHOD=noredirect
             - SERVER_HOSTNAME=paperless.${DOMAINNAME}
+            - PAPERLESS_REDIS=redis://paperless-broker:6379
+            - PAPERLESS_DBHOST=db
+            - PAPERLESS_TIKA_ENABLED=1
+            - PAPERLESS_TIKA_GOTENBERG_ENDPOINT=http://paperless-gotenberg:3000
+            - PAPERLESS_TIKA_ENDPOINT=http://paperless-tika:9998
+            - PAPERLESS_TIME_ZONE=Europe/Berlin
+            - PAPERLESS_OCR_LANGUAGES=deu eng spa
+            - PAPERLESS_COR_LANGUAGE=deu
+            - USERMAP_UID=1000
+            - USERMAP_GID=1000
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.paperless.rule=Host(`paperless.${DOMAINNAME}`)"
@@ -58,9 +60,37 @@ services:
                     - paperless.${DOMAINNAME}
                 ipv4_address: 172.25.0.8
         depends_on:
-            - etcd
-            - ldap
             - reverse-proxy
             - db
+            - paperless-broker
+            - paperless-gotenberg
+            - paperless-tika
 
+    paperless-broker:
+        image: redis:${DOCKER_PAPERLESS_REDIS_VERSION}
+        restart: unless-stopped
+        networks:
+          podewitz_local_net:
+              aliases:
+                  - paperless-broker.${DOMAINNAME}
+              ipv4_address: 172.25.0.81
 
+    paperless-gotenberg:
+        image: thecodingmachine/gotenberg:${DOCKER_PAPERLESS_GOTENBERG_VERSION}
+        restart: unless-stopped
+        environment:
+            DISABLE_GOOGLE_CHROME: 1
+        networks:
+          podewitz_local_net:
+              aliases:
+                  - paperless-gotenberg.${DOMAINNAME}
+              ipv4_address: 172.25.0.82
+
+    paperless-tika:
+        image: apache/tika:${DOCKER_PAPERLESS_TIKA_VERSION}
+        restart: unless-stopped
+        networks:
+          podewitz_local_net:
+              aliases:
+                  - paperless-tika.${DOMAINNAME}
+              ipv4_address: 172.25.0.83
