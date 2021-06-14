@@ -1,19 +1,23 @@
 version: '3.4'
 
 services:
-    db-admin:
-        image: dpage/pgadmin4:${DOCKER_PGADMIN_VERSION}
-        #build: ./pgadmin-docker
-        container_name: db-admin
-        hostname: db-admin.${DOMAINNAME}
+    jupyterhub:
+        #image: jupyterhub/jupyterhub:1.4.1
+        image: npodewitz/jupyterhub:latest
+        #build: ./jupyterhub-docker
+        container_name: jupyterhub
+        hostname: jupyterhub.${DOMAINNAME}
         restart: unless-stopped
+        command: >
+            jupyterhub -f /etc/jupyterhub/jupyterhub_config.py
         # healthcheck:
         #     test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://db-admin.podewitz.local:443"]
         #     interval: 30s
         #     timeout: 10s
         #     retries: 5
         volumes:
-            - db-admin-data:/var/lib/pgadmin
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./conf/jupyterhub/jupyterhub_config.py:/etc/jupyterhub/jupyterhub_config.py
         secrets:
             - source: etcd_client_ssl_key
               target: /etc/ssl/etcd_client.key
@@ -24,19 +28,17 @@ services:
         env_file:
             - docker-compose.base.env
         environment:
-            - VIRTUAL_HOST=db-admin.${DOMAINNAME}
-            - VIRTUAL_PORT=80
-            - VIRTUAL_ICON=storage
-            - PGADMIN_DEFAULT_EMAIL=nils.podewitz@googlemail.com
-            - PGADMIN_DEFAULT_PASSWORD=TOCHANGE
+            DOCKER_NOTEBOOK_IMAGE: "jupyter/scipy-notebook:lab-3.0.15"
+            DOCKER_NETWORK_NAME: docker_composition_home_podewitz_local_net
+            HUB_IP: jupyterhub
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.db-admin.rule=Host(`db-admin.${DOMAINNAME}`)"
+            - "traefik.http.routers.db-admin.rule=Host(`jupyter.${DOMAINNAME}`)"
             - "traefik.http.routers.db-admin.tls=true"
         networks:
             podewitz_local_net:
                 aliases:
-                    - db-admin.${DOMAINNAME}
+                    - jupyterhub.${DOMAINNAME}
                 ipv4_address: 172.25.0.12
         depends_on:
             - etcd

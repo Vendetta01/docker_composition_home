@@ -5,5 +5,6 @@
 /lum-docker
 /paperless-docker
 /landing_page-docker
+/jupyterhub-docker
 /bugs
 .gitsecret/keys/random_seed
