@@ -7,8 +7,8 @@ services:
         container_name: paperless
         hostname: paperless.${DOMAINNAME}
         restart: unless-stopped
-        ports:
-            - 8000:8000
+        #ports:
+        #    - 8000:8000
         healthcheck:
             test: ["CMD", "curl" , "-f", "http://localhost:8000"]
             interval: 30s
@@ -16,7 +16,6 @@ services:
             retries: 5
         volumes:
             - paperless-media:/usr/src/paperless/media
-            - paperless-data:/usr/src/paperless/data
             - /mnt/hdd/paperless_data/consume:/usr/src/paperless/consume
             - /mnt/hdd/paperless_data/export:/usr/src/paperless/export
             # Likewise, you can add a local path to mount a directory for
@@ -68,6 +67,8 @@ services:
 
     paperless-broker:
         image: redis:${DOCKER_PAPERLESS_REDIS_VERSION}
+        container_name: paperless-broker
+        hostname: paperless-broker.${DOMAINNAME}
         restart: unless-stopped
         networks:
           podewitz_local_net:
@@ -77,6 +78,8 @@ services:
 
     paperless-gotenberg:
         image: thecodingmachine/gotenberg:${DOCKER_PAPERLESS_GOTENBERG_VERSION}
+        container_name: paperless-gotenberg
+        hostname: paperless-gotenberg.${DOMAINNAME}
         restart: unless-stopped
         environment:
             DISABLE_GOOGLE_CHROME: 1
@@ -88,6 +91,8 @@ services:
 
     paperless-tika:
         image: apache/tika:${DOCKER_PAPERLESS_TIKA_VERSION}
+        container_name: paperless-tika
+        hostname: paperless-tika.${DOMAINNAME}
         restart: unless-stopped
         networks:
           podewitz_local_net:
