@@ -32,6 +32,10 @@ volumes:
         name: db-admin-data
         labels:
             db-admin-data.service_owner: "db-admin"
+    airflow-db-data:
+        name: airflow-db-data
+        label:
+            airflow-db-data.service_owner: "airflow-db"
 
 secrets:
     etcd_client_ssl_key:
@@ -75,3 +79,5 @@ secrets:
 
     db_admin_pw:
         file: ./init/db/config/db_admin_pw
+    airflow_fernet_key:
+        file: ./init/airflow/config/fernet_key
