@@ -1,0 +1,7 @@
+*
+!*/
+!*.secret
+!.gitignore
+!Makefile
+!mkconf.sh
+!mksan.sh
