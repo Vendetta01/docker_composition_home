@@ -34,7 +34,7 @@ volumes:
             db-admin-data.service_owner: "db-admin"
     airflow-db-data:
         name: airflow-db-data
-        label:
+        labels:
             airflow-db-data.service_owner: "airflow-db"
 
 secrets:
@@ -76,6 +76,14 @@ secrets:
         file: ./SSLCertificates/local/podewitz/ldap-admin/ldap-admin.podewitz.local.key
     ldap-admin_ssl_crt:
         file: ./SSLCertificates/local/podewitz/ldap-admin/ldap-admin.podewitz.local.crt
+    airflow_ssl_key:
+        file: ./SSLCertificates/local/podewitz/airflow/airflow.podewitz.local.key
+    airflow_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/airflow/airflow.podewitz.local.crt
+    airflow-flower_ssl_key:
+        file: ./SSLCertificates/local/podewitz/airflow/airflow-flower.podewitz.local.key
+    airflow-flower_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/airflow/airflow-flower.podewitz.local.crt
 
     db_admin_pw:
         file: ./init/db/config/db_admin_pw

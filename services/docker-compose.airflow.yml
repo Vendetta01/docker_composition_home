@@ -95,37 +95,39 @@ services:
     airflow:
         <<: *airflow-common
         command: webserver
+        container_name: airflow
+        hostname: airflow.${DOMAINNAME}
         #ports:
         #    - 8080:8080
         expose:
             - 8080
         healthcheck:
-            test: ["CMD", "curl", "--fail", "http://airflow.${DOMAINNAME}/health"]
+            test: ["CMD", "curl", "--fail", "http://172.25.0.9:8080/health"]
             interval: 10s
             timeout: 10s
             retries: 5
         restart: always
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.paperless.rule=Host(`airflow.${DOMAINNAME}`)"
-            - "traefik.http.routers.paperless.tls=true"
+            - "traefik.http.routers.airflow.rule=Host(`airflow.${DOMAINNAME}`)"
+            - "traefik.http.routers.airflow.tls=true"
         networks:
             podewitz_local_net:
                 aliases:
                     - airflow.${DOMAINNAME}
                 ipv4_address: 172.25.0.9
         depends_on:
-            reverse-proxy:
-            redis:
-                condition: service_healthy
-            airflow-db:
-                condition: service_healthy
-            airflow-scheduler:
-            airflow-worker:
-            airflow-flower:
+            - reverse-proxy
+            - redis
+            - airflow-db
+            - airflow-scheduler
+            - airflow-worker
+            - airflow-flower
 
     airflow-db:
         image: postgres:13
+        container_name: airflow-db
+        hostname: airflow-db.${DOMAINNAME}
         environment:
             POSTGRES_USER: airflow
             POSTGRES_PASSWORD: airflow
@@ -145,6 +147,8 @@ services:
 
     redis:
         image: redis:latest
+        container_name: redis
+        hostname: redis.${DOMAINNAME}
         #ports:
         #    - 6379:6379
         expose:
@@ -164,6 +168,8 @@ services:
     airflow-scheduler:
         <<: *airflow-common
         command: scheduler
+        container_name: airflow-scheduler
+        hostname: airflow-scheduler.${DOMAINNAME}
         healthcheck:
             test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
             interval: 10s
@@ -179,6 +185,8 @@ services:
     airflow-worker:
         <<: *airflow-common
         command: celery worker
+        container_name: airflow-worker
+        hostname: airflow-worker.${DOMAINNAME}
         healthcheck:
             test:
                 - "CMD-SHELL"
@@ -196,12 +204,14 @@ services:
     airflow-flower:
         <<: *airflow-common
         command: celery flower
+        container_name: airflow-flower
+        hostname: airflow-flower.${DOMAINNAME}
         #ports:
         #    - 5555:5555
         expose:
             - 5555
         healthcheck:
-            test: ["CMD", "curl", "--fail", "http://airflow-flower.${DOMAINNAME}/"]
+            test: ["CMD", "curl", "--fail", "http://172.25.0.95:5555/"]
             interval: 10s
             timeout: 10s
             retries: 5
@@ -213,8 +223,8 @@ services:
                 ipv4_address: 172.25.0.95
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.paperless.rule=Host(`airflow-flower.${DOMAINNAME}`)"
-            - "traefik.http.routers.paperless.tls=true"
+            - "traefik.http.routers.airflow-flower.rule=Host(`airflow-flower.${DOMAINNAME}`)"
+            - "traefik.http.routers.airflow-flower.tls=true"
 
     airflow-init:
         <<: *airflow-common
@@ -269,6 +279,8 @@ services:
                 mkdir -p /sources/logs /sources/dags /sources/plugins
                 chown -R "${AIRFLOW_UID}:${AIRFLOW_GID}" /sources/{logs,dags,plugins}
                 exec /entrypoint airflow version
+        container_name: airflow-init
+        hostname: airflow-init.${DOMAINNAME}
         environment:
             <<: *airflow-common-env
             _AIRFLOW_DB_UPGRADE: 'true'
