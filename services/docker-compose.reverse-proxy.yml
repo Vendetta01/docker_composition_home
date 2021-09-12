@@ -56,6 +56,14 @@ services:
               target: /etc/traefik/certs/ldap-admin.key
             - source: ldap-admin_ssl_crt
               target: /etc/traefik/certs/ldap-admin.crt
+            - source: airflow_ssl_key
+              target: /etc/traefik/certs/airflow.key
+            - source: airflow_ssl_crt
+              target: /etc/traefik/certs/airflow.crt
+            - source: airflow-flower_ssl_key
+              target: /etc/traefik/certs/airflow-flower.key
+            - source: airflow-flower_ssl_crt
+              target: /etc/traefik/certs/airflow-flower.crt
 
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro

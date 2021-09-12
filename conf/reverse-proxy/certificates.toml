@@ -1,6 +1,6 @@
 [[tls.certificates]]
-    certFile = "/etc/traefik/certs/phpldapadmin.crt"
-    keyFile = "/etc/traefik/certs/phpldapadmin.key"
+    certFile = "/etc/traefik/certs/ldap-admin.crt"
+    keyFile = "/etc/traefik/certs/ldap-admin.key"
 
 [[tls.certificates]]
     certFile = "/etc/traefik/certs/metabase.crt"
@@ -25,3 +25,11 @@
 [[tls.certificates]]
     certFile = "/etc/traefik/certs/home.crt"
     keyFile = "/etc/traefik/certs/home.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/airflow.crt"
+    keyFile = "/etc/traefik/certs/airflow.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/airflow-flower.crt"
+    keyFile = "/etc/traefik/certs/airflow-flower.key"

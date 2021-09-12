@@ -1,0 +1,298 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+# Basic Airflow cluster configuration for CeleryExecutor with Redis and PostgreSQL.
+#
+# WARNING: This configuration is for local development. Do not use it in a production deployment.
+#
+# This configuration supports basic configuration using environment variables or an .env file
+# The following variables are supported:
+#
+# AIRFLOW_IMAGE_NAME           - Docker image name used to run Airflow.
+#                                Default: apache/airflow:master-python3.8
+# AIRFLOW_UID                  - User ID in Airflow containers
+#                                Default: 50000
+# AIRFLOW_GID                  - Group ID in Airflow containers
+#                                Default: 0
+#
+# Those configurations are useful mostly in case of standalone testing/running Airflow in test/try-out mode
+#
+# _AIRFLOW_WWW_USER_USERNAME   - Username for the administrator account (if requested).
+#                                Default: airflow
+# _AIRFLOW_WWW_USER_PASSWORD   - Password for the administrator account (if requested).
+#                                Default: airflow
+# _PIP_ADDITIONAL_REQUIREMENTS - Additional PIP requirements to add when starting all containers.
+#                                Default: ''
+#
+# Feel free to modify this file to suit your needs.
+---
+version: '3.4'
+
+x-airflow-common:
+    &airflow-common
+    # In order to add custom dependencies or upgrade provider packages you can use your extended image.
+    # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
+    # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
+    image: npodewitz/airflow-local:${DOCKER_AIRFLOW_VERSION}
+    # build: .
+    environment:
+        &airflow-common-env
+        AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+        AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db/airflow
+        AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@airflow-db/airflow
+        AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+        AIRFLOW__CORE__FERNET_KEY_CMD: "cat /run/secrets/airflow_fernet_key"
+        AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+        AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+        AIRFLOW__CORE__LOAD_DEFAULT_CONNECTIONS: "false"
+        AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
+        AIRFLOW__CELERY__WORKER_CONCURRENCY: 4
+        AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT: 300  # Default: 120
+        AIRFLOW__WEBSERVER__WORKERS: 2  # Default: 4
+        AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
+        AIRFLOW__CELERY__WORKER_CONCURRENCY: 4  # Default: 16
+        AIRFLOW__SCHEDULER__JOB_HEARTBEAT_SEC: 10  # Default: 5
+        AIRFLOW__SCHEDULER__CLEAN_TIS_WITHOUT_DAGRUN_INTERVAL: 30.0  # Default: 15.0
+        AIRFLOW__SCHEDULER__SCHEDULER_HEARTBEAT_SEC: 10  # Default: 5
+        AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 120  # Default: 30
+        AIRFLOW__SCHEDULER__SCHEDULER_HEALTH_CHECK_THRESHOLD: 120  # Default: 30
+        AIRFLOW__SCHEDULER__CATCHUP_BY_DEFAULT: "false"
+        AIRFLOW__SCHEDULER__PARSING_PROCESSES: 2  # Default: 2
+        AIRFLOW__SCHEDULER__ALLOW_TRIGGER_IN_FUTURE: "true"
+        _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    env_file:
+        - docker-compose.base.env
+    volumes:
+        - ./data/airflow/dags:/opt/airflow/dags
+        - ./data/airflow/logs:/opt/airflow/logs
+        - ./data/airflow/plugins:/opt/airflow/plugins
+        - ./data/airflow/storage/:/storage/
+    user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-0}"
+    secrets:
+        - airflow_fernet_key
+    depends_on:
+        redis:
+            condition: service_healthy
+        airflow-db:
+            condition: service_healthy
+
+services:
+    airflow:
+        <<: *airflow-common
+        command: webserver
+        container_name: airflow
+        hostname: airflow.${DOMAINNAME}
+        #ports:
+        #    - 8080:8080
+        expose:
+            - 8080
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "http://172.25.0.9:8080/health"]
+            interval: 10s
+            timeout: 10s
+            retries: 5
+        restart: always
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.airflow.rule=Host(`airflow.${DOMAINNAME}`)"
+            - "traefik.http.routers.airflow.tls=true"
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - airflow.${DOMAINNAME}
+                ipv4_address: 172.25.0.9
+        depends_on:
+            - reverse-proxy
+            - redis
+            - airflow-db
+            - airflow-scheduler
+            - airflow-worker
+            - airflow-flower
+            - airflow-init
+
+    airflow-db:
+        image: postgres:13
+        container_name: airflow-db
+        hostname: airflow-db.${DOMAINNAME}
+        environment:
+            POSTGRES_USER: airflow
+            POSTGRES_PASSWORD: airflow
+            POSTGRES_DB: airflow
+        volumes:
+            - airflow-db-data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "airflow"]
+            interval: 5s
+            retries: 5
+        restart: always
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - airflow-db.${DOMAINNAME}
+                ipv4_address: 172.25.0.91
+
+    redis:
+        image: redis:latest
+        container_name: redis
+        hostname: redis.${DOMAINNAME}
+        #ports:
+        #    - 6379:6379
+        expose:
+            - 6379
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 30s
+            retries: 50
+        restart: always
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - redis.${DOMAINNAME}
+                ipv4_address: 172.25.0.92
+
+    airflow-scheduler:
+        <<: *airflow-common
+        command: scheduler
+        container_name: airflow-scheduler
+        hostname: airflow-scheduler.${DOMAINNAME}
+        healthcheck:
+            test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+            interval: 10s
+            timeout: 10s
+            retries: 5
+        restart: always
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - airflow-scheduler.${DOMAINNAME}
+                ipv4_address: 172.25.0.93
+
+    airflow-worker:
+        <<: *airflow-common
+        command: celery worker
+        container_name: airflow-worker
+        hostname: airflow-worker.${DOMAINNAME}
+        healthcheck:
+            test:
+                - "CMD-SHELL"
+                - 'celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
+            interval: 10s
+            timeout: 10s
+            retries: 5
+        restart: always
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - airflow-worker.${DOMAINNAME}
+                ipv4_address: 172.25.0.94
+
+    airflow-flower:
+        <<: *airflow-common
+        command: celery flower
+        container_name: airflow-flower
+        hostname: airflow-flower.${DOMAINNAME}
+        #ports:
+        #    - 5555:5555
+        expose:
+            - 5555
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "http://172.25.0.95:5555/"]
+            interval: 10s
+            timeout: 10s
+            retries: 5
+        restart: always
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - airflow-flower.${DOMAINNAME}
+                ipv4_address: 172.25.0.95
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.airflow-flower.rule=Host(`airflow-flower.${DOMAINNAME}`)"
+            - "traefik.http.routers.airflow-flower.tls=true"
+
+    airflow-init:
+        <<: *airflow-common
+        entrypoint: /bin/bash
+        command:
+            - -c
+            - |
+                function ver() {
+                    printf "%04d%04d%04d%04d" $${1//./ }
+                }
+                airflow_version=$$(gosu airflow airflow version)
+                airflow_version_comparable=$$(ver $${airflow_version})
+                min_airflow_version=2.1.0
+                min_airlfow_version_comparable=$$(ver $${min_airflow_version})
+                if (( airflow_version_comparable < min_airlfow_version_comparable )); then
+                    echo -e "\033[1;31mERROR!!!: Too old Airflow version $${airflow_version}!\e[0m"
+                    echo "The minimum Airflow version supported: $${min_airflow_version}. Only use this or higher!"
+                    exit 1
+                fi
+                if [[ -z "${AIRFLOW_UID}" ]]; then
+                    echo -e "\033[1;31mERROR!!!: AIRFLOW_UID not set!\e[0m"
+                    echo "Please follow these instructions to set AIRFLOW_UID and AIRFLOW_GID environment variables:
+                        https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html#initializing-environment"
+                    exit 1
+                fi
+                one_meg=1048576
+                mem_available=$$(($$(getconf _PHYS_PAGES) * $$(getconf PAGE_SIZE) / one_meg))
+                cpus_available=$$(grep -cE 'cpu[0-9]+' /proc/stat)
+                disk_available=$$(df / | tail -1 | awk '{print $$4}')
+                warning_resources="false"
+                if (( mem_available < 4000 )) ; then
+                    echo -e "\033[1;33mWARNING!!!: Not enough memory available for Docker.\e[0m"
+                    echo "At least 4GB of memory required. You have $$(numfmt --to iec $$((mem_available * one_meg)))"
+                    warning_resources="true"
+                fi
+                if (( cpus_available < 2 )); then
+                    echo -e "\033[1;33mWARNING!!!: Not enough CPUS available for Docker.\e[0m"
+                    echo "At least 2 CPUs recommended. You have $${cpus_available}"
+                    warning_resources="true"
+                fi
+                if (( disk_available < one_meg * 10 )); then
+                    echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
+                    echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
+                    warning_resources="true"
+                fi
+                if [[ $${warning_resources} == "true" ]]; then
+                    echo
+                    echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
+                    echo "Please follow the instructions to increase amount of resources available:"
+                    echo "   https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html#before-you-begin"
+                fi
+                mkdir -p /sources/logs /sources/dags /sources/plugins
+                chown -R "${AIRFLOW_UID}:${AIRFLOW_GID}" /sources/{logs,dags,plugins}
+                exec /entrypoint airflow version
+        container_name: airflow-init
+        hostname: airflow-init.${DOMAINNAME}
+        environment:
+            <<: *airflow-common-env
+            _AIRFLOW_DB_UPGRADE: 'true'
+            _AIRFLOW_WWW_USER_CREATE: 'true'
+            _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+            _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+        user: "0:${AIRFLOW_GID:-0}"
+        volumes:
+            - .:/sources
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - airflow-init.${DOMAINNAME}
+                ipv4_address: 172.25.0.99
