@@ -35,7 +35,7 @@ volumes:
     airflow-db-data:
         name: airflow-db-data
         labels:
-            airflow-db-data.service_owner: "airflow-db"
+            airflow-db-data.service_owner: "airflow"
 
 secrets:
     etcd_client_ssl_key:
