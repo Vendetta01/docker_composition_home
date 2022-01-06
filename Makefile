@@ -1,5 +1,5 @@
 
-SERVICES := etcd ldap ldap-admin e3w lum reverse-proxy dnsmasq paperless metabase db db-admin home airflow
+SERVICES := etcd ldap ldap-admin e3w lum reverse-proxy dnsmasq paperless metabase db db-admin home airflow budget
 
 RUN_SERVICES := $(SERVICES:%=run-%)
 CLEAN_RUN_SERVICES := $(SERVICES:%=clean-run-%)

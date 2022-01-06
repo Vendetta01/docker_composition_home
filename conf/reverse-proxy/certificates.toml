@@ -33,3 +33,11 @@
 [[tls.certificates]]
     certFile = "/etc/traefik/certs/airflow-flower.crt"
     keyFile = "/etc/traefik/certs/airflow-flower.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/budget.crt"
+    keyFile = "/etc/traefik/certs/budget.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/budget-backend.crt"
+    keyFile = "/etc/traefik/certs/budget-backend.key"

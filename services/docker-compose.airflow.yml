@@ -44,10 +44,10 @@
 version: '3.4'
 
 x-airflow-common:
-    &airflow-common
     # In order to add custom dependencies or upgrade provider packages you can use your extended image.
     # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
     # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
+    &airflow-common
     image: npodewitz/airflow-local:${DOCKER_AIRFLOW_VERSION}
     # build: .
     environment:
@@ -61,18 +61,17 @@ x-airflow-common:
         AIRFLOW__CORE__LOAD_EXAMPLES: "false"
         AIRFLOW__CORE__LOAD_DEFAULT_CONNECTIONS: "false"
         AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
-        AIRFLOW__CELERY__WORKER_CONCURRENCY: 4
-        AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT: 300  # Default: 120
-        AIRFLOW__WEBSERVER__WORKERS: 2  # Default: 4
+        AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT: 300 # Default: 120
+        AIRFLOW__WEBSERVER__WORKERS: 2 # Default: 4
         AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
-        AIRFLOW__CELERY__WORKER_CONCURRENCY: 4  # Default: 16
-        AIRFLOW__SCHEDULER__JOB_HEARTBEAT_SEC: 10  # Default: 5
-        AIRFLOW__SCHEDULER__CLEAN_TIS_WITHOUT_DAGRUN_INTERVAL: 30.0  # Default: 15.0
-        AIRFLOW__SCHEDULER__SCHEDULER_HEARTBEAT_SEC: 10  # Default: 5
-        AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 120  # Default: 30
-        AIRFLOW__SCHEDULER__SCHEDULER_HEALTH_CHECK_THRESHOLD: 120  # Default: 30
+        AIRFLOW__CELERY__WORKER_CONCURRENCY: 4 # Default: 16
+        AIRFLOW__SCHEDULER__JOB_HEARTBEAT_SEC: 10 # Default: 5
+        AIRFLOW__SCHEDULER__CLEAN_TIS_WITHOUT_DAGRUN_INTERVAL: 30.0 # Default: 15.0
+        AIRFLOW__SCHEDULER__SCHEDULER_HEARTBEAT_SEC: 10 # Default: 5
+        AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 120 # Default: 30
+        AIRFLOW__SCHEDULER__SCHEDULER_HEALTH_CHECK_THRESHOLD: 120 # Default: 30
         AIRFLOW__SCHEDULER__CATCHUP_BY_DEFAULT: "false"
-        AIRFLOW__SCHEDULER__PARSING_PROCESSES: 2  # Default: 2
+        AIRFLOW__SCHEDULER__PARSING_PROCESSES: 2 # Default: 2
         AIRFLOW__SCHEDULER__ALLOW_TRIGGER_IN_FUTURE: "true"
         _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     env_file:
@@ -102,7 +101,13 @@ services:
         expose:
             - 8080
         healthcheck:
-            test: ["CMD", "curl", "--fail", "http://172.25.0.9:8080/health"]
+            test:
+                [
+                    "CMD",
+                    "curl",
+                    "--fail",
+                    "http://172.25.0.9:8080/health"
+                ]
             interval: 10s
             timeout: 10s
             retries: 5
@@ -136,7 +141,7 @@ services:
         volumes:
             - airflow-db-data:/var/lib/postgresql/data
         healthcheck:
-            test: ["CMD", "pg_isready", "-U", "airflow"]
+            test: [ "CMD", "pg_isready", "-U", "airflow" ]
             interval: 5s
             retries: 5
         restart: always
@@ -155,7 +160,7 @@ services:
         expose:
             - 6379
         healthcheck:
-            test: ["CMD", "redis-cli", "ping"]
+            test: [ "CMD", "redis-cli", "ping" ]
             interval: 5s
             timeout: 30s
             retries: 50
@@ -172,7 +177,12 @@ services:
         container_name: airflow-scheduler
         hostname: airflow-scheduler.${DOMAINNAME}
         healthcheck:
-            test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+            test:
+                [
+                    "CMD-SHELL",
+                    'airflow jobs check --job-type SchedulerJob --hostname
+                      "$${HOSTNAME}"'
+                ]
             interval: 10s
             timeout: 10s
             retries: 5
@@ -191,7 +201,8 @@ services:
         healthcheck:
             test:
                 - "CMD-SHELL"
-                - 'celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
+                - 'celery --app airflow.executors.celery_executor.app inspect
+                  ping -d "celery@$${HOSTNAME}"'
             interval: 10s
             timeout: 10s
             retries: 5
@@ -212,7 +223,7 @@ services:
         expose:
             - 5555
         healthcheck:
-            test: ["CMD", "curl", "--fail", "http://172.25.0.95:5555/"]
+            test: [ "CMD", "curl", "--fail", "http://172.25.0.95:5555/" ]
             interval: 10s
             timeout: 10s
             retries: 5
@@ -224,7 +235,8 @@ services:
                 ipv4_address: 172.25.0.95
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.airflow-flower.rule=Host(`airflow-flower.${DOMAINNAME}`)"
+            - "traefik.http.routers.airflow-flower.rule=Host(`airflow-flower.${\
+              DOMAINNAME}`)"
             - "traefik.http.routers.airflow-flower.tls=true"
 
     airflow-init:
@@ -233,53 +245,53 @@ services:
         command:
             - -c
             - |
-                function ver() {
-                    printf "%04d%04d%04d%04d" $${1//./ }
-                }
-                airflow_version=$$(gosu airflow airflow version)
-                airflow_version_comparable=$$(ver $${airflow_version})
-                min_airflow_version=2.1.0
-                min_airlfow_version_comparable=$$(ver $${min_airflow_version})
-                if (( airflow_version_comparable < min_airlfow_version_comparable )); then
-                    echo -e "\033[1;31mERROR!!!: Too old Airflow version $${airflow_version}!\e[0m"
-                    echo "The minimum Airflow version supported: $${min_airflow_version}. Only use this or higher!"
-                    exit 1
-                fi
-                if [[ -z "${AIRFLOW_UID}" ]]; then
-                    echo -e "\033[1;31mERROR!!!: AIRFLOW_UID not set!\e[0m"
-                    echo "Please follow these instructions to set AIRFLOW_UID and AIRFLOW_GID environment variables:
-                        https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html#initializing-environment"
-                    exit 1
-                fi
-                one_meg=1048576
-                mem_available=$$(($$(getconf _PHYS_PAGES) * $$(getconf PAGE_SIZE) / one_meg))
-                cpus_available=$$(grep -cE 'cpu[0-9]+' /proc/stat)
-                disk_available=$$(df / | tail -1 | awk '{print $$4}')
-                warning_resources="false"
-                if (( mem_available < 4000 )) ; then
-                    echo -e "\033[1;33mWARNING!!!: Not enough memory available for Docker.\e[0m"
-                    echo "At least 4GB of memory required. You have $$(numfmt --to iec $$((mem_available * one_meg)))"
-                    warning_resources="true"
-                fi
-                if (( cpus_available < 2 )); then
-                    echo -e "\033[1;33mWARNING!!!: Not enough CPUS available for Docker.\e[0m"
-                    echo "At least 2 CPUs recommended. You have $${cpus_available}"
-                    warning_resources="true"
-                fi
-                if (( disk_available < one_meg * 10 )); then
-                    echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
-                    echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
-                    warning_resources="true"
-                fi
-                if [[ $${warning_resources} == "true" ]]; then
-                    echo
-                    echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
-                    echo "Please follow the instructions to increase amount of resources available:"
-                    echo "   https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html#before-you-begin"
-                fi
-                mkdir -p /sources/logs /sources/dags /sources/plugins
-                chown -R "${AIRFLOW_UID}:${AIRFLOW_GID}" /sources/{logs,dags,plugins}
-                exec /entrypoint airflow version
+              function ver() {
+                  printf "%04d%04d%04d%04d" $${1//./ }
+              }
+              airflow_version=$$(gosu airflow airflow version)
+              airflow_version_comparable=$$(ver $${airflow_version})
+              min_airflow_version=2.1.0
+              min_airlfow_version_comparable=$$(ver $${min_airflow_version})
+              if (( airflow_version_comparable < min_airlfow_version_comparable )); then
+                  echo -e "\033[1;31mERROR!!!: Too old Airflow version $${airflow_version}!\e[0m"
+                  echo "The minimum Airflow version supported: $${min_airflow_version}. Only use this or higher!"
+                  exit 1
+              fi
+              if [[ -z "${AIRFLOW_UID}" ]]; then
+                  echo -e "\033[1;31mERROR!!!: AIRFLOW_UID not set!\e[0m"
+                  echo "Please follow these instructions to set AIRFLOW_UID and AIRFLOW_GID environment variables:
+                      https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html#initializing-environment"
+                  exit 1
+              fi
+              one_meg=1048576
+              mem_available=$$(($$(getconf _PHYS_PAGES) * $$(getconf PAGE_SIZE) / one_meg))
+              cpus_available=$$(grep -cE 'cpu[0-9]+' /proc/stat)
+              disk_available=$$(df / | tail -1 | awk '{print $$4}')
+              warning_resources="false"
+              if (( mem_available < 4000 )) ; then
+                  echo -e "\033[1;33mWARNING!!!: Not enough memory available for Docker.\e[0m"
+                  echo "At least 4GB of memory required. You have $$(numfmt --to iec $$((mem_available * one_meg)))"
+                  warning_resources="true"
+              fi
+              if (( cpus_available < 2 )); then
+                  echo -e "\033[1;33mWARNING!!!: Not enough CPUS available for Docker.\e[0m"
+                  echo "At least 2 CPUs recommended. You have $${cpus_available}"
+                  warning_resources="true"
+              fi
+              if (( disk_available < one_meg * 10 )); then
+                  echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
+                  echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
+                  warning_resources="true"
+              fi
+              if [[ $${warning_resources} == "true" ]]; then
+                  echo
+                  echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
+                  echo "Please follow the instructions to increase amount of resources available:"
+                  echo "   https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html#before-you-begin"
+              fi
+              mkdir -p /sources/logs /sources/dags /sources/plugins
+              chown -R "${AIRFLOW_UID}:${AIRFLOW_GID}" /sources/{logs,dags,plugins}
+              exec /entrypoint airflow version
         container_name: airflow-init
         hostname: airflow-init.${DOMAINNAME}
         environment:
