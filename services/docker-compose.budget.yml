@@ -1,18 +1,16 @@
 version: '3.4'
 
 services:
-  budget-backend:
-    image: npodewitz/budget-backend:${DOCKER_BUDGET_BACKEND_VERSION}
+  budget:
+    image: npodewitz/budget:${DOCKER_BUDGET_VERSION}
     #build: ./backend
-    container_name: budget-backend
-    hostname: budget-backend.${DOMAINNAME}
+    container_name: budget
+    hostname: budget.${DOMAINNAME}
     restart: unless-stopped
     expose:
-      - 5000
-    # ports:
-    #   - 5000:5000
+      - 8000
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:5000/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -23,52 +21,25 @@ services:
     environment:
       # - DB_TYPE=sqlite
       # - SQLITE_DB_PATH=budget.sqlite
+      - ALLOWED_HOSTS=*
+      - LANGUAGE_CODE=de
+      - TIME_ZONE=Europe/Berlin
       - DB_TYPE=postgres
-      - POSTGRES_DB_NAME=budget-db
-      - POSTGRES_DB_USER=budget
-      - POSTGRES_DB_PW=ypqmt4ffp3
-      - POSTGRES_DB_HOST=db.podewitz.local
-      - POSTGRES_DB_PORT=5432
+      - DB_NAME=budget-db
+      - DB_USER=budget
+      - DB_PW=ypqmt4ffp3
+      - DB_HOST=db.podewitz.local
+      - DB_PORT=5432
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.budget-backend.rule=Host(`budget-backend.${DOMAIN\
-        NAME}`)"
+      - "traefik.http.routers.budget-backend.rule=Host(`budget.${DOMAINNAME}`)"
       - "traefik.http.routers.budget-backend.tls=true"
     networks:
       podewitz_local_net:
         aliases:
-          - budget-backend.${DOMAINNAME}
+          - budget.${DOMAINNAME}
         ipv4_address: 172.25.0.14
     depends_on:
       - reverse-proxy
       - db
-
-  budget:
-    image: npodewitz/budget-frontend:${DOCKER_BUDGET_FRONTEND_VERSION}
-    #build: ./frontend
-    container_name: budget
-    hostname: budget.${DOMAINNAME}
-    restart: unless-stopped
-    # ports:
-    #   - 5001:80
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:80" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    # volumes:
-    # - /path/to/another/arbitrary/place:/data
-    env_file:
-      - docker-compose.base.env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.budget.rule=Host(`budget.${DOMAINNAME}`)"
-      - "traefik.http.routers.budget.tls=true"
-    networks:
-      podewitz_local_net:
-        aliases:
-          - budget.${DOMAINNAME}
-        ipv4_address: 172.25.0.15
-    depends_on:
-      - reverse-proxy
-      - budget-backend
+      - db-admin
