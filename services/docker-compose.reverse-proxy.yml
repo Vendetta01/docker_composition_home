@@ -68,10 +68,6 @@ services:
         target: /etc/traefik/certs/budget.key
       - source: budget_ssl_crt
         target: /etc/traefik/certs/budget.crt
-      - source: budget_backend_ssl_key
-        target: /etc/traefik/certs/budget-backend.key
-      - source: budget_backend_ssl_crt
-        target: /etc/traefik/certs/budget-backend.crt
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro

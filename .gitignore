@@ -7,3 +7,4 @@
 /bugs
 /data
 .gitsecret/keys/random_seed
+.venv
