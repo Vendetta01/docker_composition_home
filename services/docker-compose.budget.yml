@@ -32,8 +32,8 @@ services:
       - DB_PORT=5432
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.budget-backend.rule=Host(`budget.${DOMAINNAME}`)"
-      - "traefik.http.routers.budget-backend.tls=true"
+      - "traefik.http.routers.budget.rule=Host(`budget.${DOMAINNAME}`)"
+      - "traefik.http.routers.budget.tls=true"
     networks:
       podewitz_local_net:
         aliases:
@@ -42,4 +42,3 @@ services:
     depends_on:
       - reverse-proxy
       - db
-      - db-admin
