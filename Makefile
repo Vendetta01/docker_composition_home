@@ -1,7 +1,7 @@
 
 #SERVICES := etcd ldap ldap-admin e3w lum reverse-proxy dnsmasq paperless metabase db db-admin home airflow budget
 
-SERVICES := base admin paperless
+SERVICES := base admin paperless budget metabase
 
 
 RUN_SERVICES := $(SERVICES:%=run-%)
