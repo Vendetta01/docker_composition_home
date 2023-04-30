@@ -54,10 +54,6 @@ secrets:
         file: ./SSLCertificates/local/podewitz/paperless/paperless.podewitz.local.key
     paperless_ssl_crt:
         file: ./SSLCertificates/local/podewitz/paperless/paperless.podewitz.local.crt
-    e3w_ssl_key:
-        file: ./SSLCertificates/local/podewitz/e3w/e3w.podewitz.local.key
-    e3w_ssl_crt:
-        file: ./SSLCertificates/local/podewitz/e3w/e3w.podewitz.local.crt
     root_ca_crt:
         file: ./SSLCertificates/rootCA.crt
     metabase_ssl_key:

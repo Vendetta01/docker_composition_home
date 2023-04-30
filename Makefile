@@ -9,26 +9,25 @@ RUN_SERVICES_DEBUG := $(SERVICES:%=debug-%)
 STOP_SERVICES := $(SERVICES:%=stop-%)
 CLEAN_SERVICES := $(SERVICES:%=clean-%)
 CLEAN_RUN_SERVICES := $(SERVICES:%=clean-run-%)
+CLEAN_DEBUG_SERVICES := $(SERVICES:%=clean-debug-%)
 INIT_SERVICES := $(SERVICES:%=init-%)
 BUILD_SERVICES := $(SERVICES:%=build-%)
 BACKUP_SERVICES := $(SERVICES:%=backup-%)
-COMPOSE_FILES_BASE := -f docker-compose.base.yml
+COMPOSE_FILES_BASE := -f docker-compose.base.yml -f services/docker-compose.base.yml
 COMPOSE_FILES_ALL := $(COMPOSE_FILES_BASE) $(SERVICES:%=-f services/docker-compose.%.yml)
 
 #.PHONY: run run-nodaemon clean build clean-run clean-run-nodaemon stop $(RUN_SERVICES) $(CLEAN_RUN_SERVICES) $(BUILD_SERVICES) $(INIT_SERVICES) init
-.PHONY: test $(RUN_SERVICES) $(RUN_SERVICES_DEBUG) $(STOP_SERVICES) $(CLEAN_SERVICES) \
-	$(INIT_SERVICES) $(CLEAN_RUN_SERVICES) stop-all clean-all init-all
-
-test:
-	@echo "Test: $(RUN_SERVICES)"
+.PHONY: $(RUN_SERVICES) $(RUN_SERVICES_DEBUG) $(STOP_SERVICES) $(CLEAN_SERVICES) \
+	$(INIT_SERVICES) $(CLEAN_RUN_SERVICES) stop-all clean-all init-all run-all \
+	debug-all clean-run-all clean-debug-all
 
 $(RUN_SERVICES):
 	@echo "Running $(@:run-%=%)..."
 	docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:run-%=%).yml up -d
 
 $(RUN_SERVICES_DEBUG):
-	@echo "Debugging $(@:run-%=%)..."
-	docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:run-%=%).yml up
+	@echo "Debugging $(@:debug-%=%)..."
+	docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:debug-%=%).yml up
 
 $(STOP_SERVICES):
 	-docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:stop-%=%).yml down
@@ -45,6 +44,8 @@ $(INIT_SERVICES):
 
 $(CLEAN_RUN_SERVICES): clean-run-%: clean-% init-% run-%
 
+$(CLEAN_DEBUG_SERVICES): clean-debug-%: clean-% init-% debug-%
+
 
 
 stop-all:
@@ -55,6 +56,18 @@ clean-all:
 	-docker-compose $(COMPOSE_FILES_ALL) down -v --remove-orphans
 
 init-all: $(INIT_SERVICES)
+
+run-all:
+	@echo "Running all services..."
+	docker-compose $(COMPOSE_FILES_ALL) up -d
+
+debug-all:
+	@echo "Debugging all services..."
+	docker-compose $(COMPOSE_FILES_ALL) up
+
+clean-run-all: clean-all init-all run-all
+
+clean-debug-all: clean-all init-all debug-all
 
 # run:
 # 	@echo "Running all services (daemon mode)..."
