@@ -1,0 +1,176 @@
+version: '3.4'
+services:
+    reverse-proxy:
+        image: traefik:${DOCKER_TRAEFIK_VERSION}
+        container_name: reverse-proxy
+        #container_name: "traefik"
+        restart: unless-stopped
+        hostname: reverse-proxy.${DOMAINNAME}
+        #healthcheck
+        ports:
+            - "80:80"
+            - "443:443"
+            # Web UI
+            - "8081:8080"
+        env_file:
+            - docker-compose.base.env
+        environment:
+            TRAEFIK_API_INSECURE: "true"
+            TRAEFIK_PROVIDERS_DOCKER: "true"
+            TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: "false"
+            TRAEFIK_ENTRYPOINTS_WEB_ADDRESS: ":80"
+            TRAEFIK_ENTRYPOINTS_WEB_HTTP_REDIRECTIONS_ENTRYPOINT_TO: "websecure"
+            TRAEFIK_ENTRYPOINTS_WEB_HTTP_REDIRECTIONS_ENTRYPOINT_SCHEME: "https"
+            TRAEFIK_ENTRYPOINTS_WEBSECURE_ADDRESS: ":443"
+            TRAEFIK_PROVIDERS_FILE_DIRECTORY: "/etc/traefik/"
+            TRAEFIK_PROVIDERS_FILE_WATCH: "true"
+            #TRAEFIK_ACCESSLOG: "true"
+            #TRAEFIK_LOG_LEVEL: "DEBUG"
+            #     - DEFAULT_HOST=${DOMAINNAME}
+        secrets:
+            - source: lum_ssl_key
+              target: /etc/traefik/certs/lum.key
+            - source: lum_ssl_crt
+              target: /etc/traefik/certs/lum.crt
+            - source: paperless_ssl_key
+              target: /etc/traefik/certs/paperless.key
+            - source: paperless_ssl_crt
+              target: /etc/traefik/certs/paperless.crt
+            - source: metabase_ssl_key
+              target: /etc/traefik/certs/metabase.key
+            - source: metabase_ssl_crt
+              target: /etc/traefik/certs/metabase.crt
+            - source: db-admin_ssl_key
+              target: /etc/traefik/certs/db-admin.key
+            - source: db-admin_ssl_crt
+              target: /etc/traefik/certs/db-admin.crt
+            - source: home_ssl_key
+              target: /etc/traefik/certs/home.key
+            - source: home_ssl_crt
+              target: /etc/traefik/certs/home.crt
+            - source: ldap-admin_ssl_key
+              target: /etc/traefik/certs/ldap-admin.key
+            - source: ldap-admin_ssl_crt
+              target: /etc/traefik/certs/ldap-admin.crt
+            - source: airflow_ssl_key
+              target: /etc/traefik/certs/airflow.key
+            - source: airflow_ssl_crt
+              target: /etc/traefik/certs/airflow.crt
+            - source: airflow-flower_ssl_key
+              target: /etc/traefik/certs/airflow-flower.key
+            - source: airflow-flower_ssl_crt
+              target: /etc/traefik/certs/airflow-flower.crt
+            - source: budget_ssl_key
+              target: /etc/traefik/certs/budget.key
+            - source: budget_ssl_crt
+              target: /etc/traefik/certs/budget.crt
+
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - ./conf/reverse-proxy/certificates.toml:/etc/traefik/certificates.toml
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - reverse-proxy.${DOMAINNAME}
+                ipv4_address: 172.25.0.2
+
+    ldap:
+        image: osixia/openldap:${DOCKER_OPENLDAP_VERSION}
+        container_name: ldap
+        restart: unless-stopped
+        hostname: ldap.${DOMAINNAME}
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "true",
+                    "|",
+                    "openssl",
+                    "s_client",
+                    "-connect",
+                    "ldap.podewitz.local:636"
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+        command: --copy-service
+        ports:
+            - "389:389"
+            - "636:636"
+        volumes:
+            - ldap-config:/etc/ldap
+            - ldap-data:/var/lib/ldap
+            - ./conf/openldap/schema/sudo.schema:/container/service/slapd/assets/config/bootstrap/schema/sudo.schema
+            - ./init/openldap/backup/ldap_dump_latest.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/02_ldap_dump.ldif
+            - ./init/openldap/config/ldap_config.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/01_ldap_config.ldif
+            - ./conf/openldap/env/def-env.yaml:/container/environment/01-custom/env.yaml
+        secrets:
+            - source: ldap_ssl_key
+              target: /container/service/slapd/assets/certs/ldap_ssl.key
+            - source: ldap_ssl_crt
+              target: /container/service/slapd/assets/certs/ldap_ssl.crt
+            - source: root_ca_crt
+              target: /container/service/slapd/assets/certs/root_ca.crt
+        env_file:
+            - docker-compose.base.env
+        environment:
+            - LDAP_TLS_CRT_FILENAME=ldap_ssl.crt
+            - LDAP_TLS_KEY_FILENAME=ldap_ssl.key
+            - LDAP_TLS_CA_CRT_FILENAME=root_ca.crt
+            - LDAP_ORGANISATION=Podewitz
+            - LDAP_DOMAIN=${DOMAINNAME}
+            - LDAP_RFC2307BIS_SCHEMA=true
+            - LDAP_BACKEND=mdb
+            - LDAP_TLS_ENFORCE=true
+            - LDAP_TLS_VERIFY_CLIENT=try
+            - KEEP_EXISTING_CONFIG=true
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - ldap.${DOMAINNAME}
+                ipv4_address: 172.25.0.3
+
+    db:
+        image: postgres:${DOCKER_POSTGRES_VERSION}
+        #build: ./postgres-docker
+        container_name: db
+        hostname: db.${DOMAINNAME}
+        restart: unless-stopped
+        healthcheck:
+            test: [ "CMD", "pg_isready", "-U", "admin" ]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+        ports:
+            - "5432:5432"
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        secrets:
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+            - db_admin_pw
+        env_file:
+            - docker-compose.base.env
+        environment:
+            - POSTGRES_USER=admin
+            - POSTGRES_PASSWORD_FILE=/run/secrets/db_admin_pw
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - db.${DOMAINNAME}
+                ipv4_address: 172.25.0.4
+
+
+volumes:
+    ldap-config:
+        name: ldap-config
+        labels:
+            ldap-config.service_owner: "ldap"
+    ldap-data:
+        name: ldap-data
+        labels:
+            ldap-data.service_owner: "ldap"
+    db-data:
+        name: db-data
+        labels:
+            db-data.service_owner: "db"

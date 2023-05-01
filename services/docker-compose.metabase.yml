@@ -13,10 +13,6 @@ services:
         #     timeout: 10s
         #     retries: 5
         secrets:
-            - source: etcd_client_ssl_key
-              target: /etc/ssl/etcd_client.key
-            - source: etcd_client_ssl_crt
-              target: /etc/ssl/etcd_client.crt
             - source: root_ca_crt
               target: /etc/ssl/root_ca.crt
         env_file:
@@ -40,9 +36,8 @@ services:
             podewitz_local_net:
                 aliases:
                     - metabase.${DOMAINNAME}
-                ipv4_address: 172.25.0.11
+                ipv4_address: 172.25.0.23
         depends_on:
-            - etcd
             - ldap
             - reverse-proxy
             - db

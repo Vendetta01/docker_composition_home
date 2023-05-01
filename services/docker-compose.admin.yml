@@ -1,0 +1,85 @@
+version: '3.4'
+
+services:
+    db-admin:
+        image: dpage/pgadmin4:${DOCKER_PGADMIN_VERSION}
+        #build: ./pgadmin-docker
+        container_name: db-admin
+        hostname: db-admin.${DOMAINNAME}
+        restart: unless-stopped
+        # healthcheck:
+        #     test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://db-admin.podewitz.local:443"]
+        #     interval: 30s
+        #     timeout: 10s
+        #     retries: 5
+        volumes:
+            - db-admin-data:/var/lib/pgadmin
+        secrets:
+            - source: etcd_client_ssl_key
+              target: /etc/ssl/etcd_client.key
+            - source: etcd_client_ssl_crt
+              target: /etc/ssl/etcd_client.crt
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+        env_file:
+            - docker-compose.base.env
+        environment:
+            - PGADMIN_DEFAULT_EMAIL=nils.podewitz@googlemail.com
+            - PGADMIN_DEFAULT_PASSWORD=TOCHANGE
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.db-admin.rule=Host(`db-admin.${DOMAINNAME}`)"
+            - "traefik.http.routers.db-admin.tls=true"
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - db-admin.${DOMAINNAME}
+                ipv4_address: 172.25.0.10
+        depends_on:
+            - ldap
+            - reverse-proxy
+            - db
+
+
+
+    ldap-admin:
+        image: osixia/phpldapadmin:latest
+        container_name: ldap-admin
+        restart: unless-stopped
+        hostname: ldap-admin.${DOMAINNAME}
+        healthcheck:
+            test: ["CMD-SHELL", "[ $$(pgrep -u www-data -c -f /usr/sbin/apache2) -gt 0 ] || exit 1"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+        command: --copy-service
+        expose:
+            - "80"
+        secrets:
+            - ldap_ssl_key
+            - ldap_ssl_crt
+            - root_ca_crt
+        env_file:
+            - docker-compose.base.env
+        environment:
+            PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'ldaps://ldap.podewitz.local:636': [{'server': [{'port': 0}]}]}]"
+            PHPLDAPADMIN_HTTPS: "false"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.ldap-admin.rule=Host(`ldap-admin.${DOMAINNAME}`)"
+            - "traefik.http.routers.ldap-admin.tls=true"
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - ldap-admin.${DOMAINNAME}
+                ipv4_address: 172.25.0.11
+        depends_on:
+            - ldap
+            - reverse-proxy
+
+
+volumes:
+    db-admin-data:
+        name: db-admin-data
+        labels:
+            db-admin-data.service_owner: "db-admin"

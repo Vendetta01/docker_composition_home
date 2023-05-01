@@ -55,7 +55,7 @@ services:
             podewitz_local_net:
                 aliases:
                     - lum.${DOMAINNAME}
-                ipv4_address: 172.25.0.6
+                ipv4_address: 172.25.0.22
         depends_on:
             - ldap
             - reverse-proxy

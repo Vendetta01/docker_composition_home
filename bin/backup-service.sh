@@ -69,31 +69,26 @@ if (($# == 0)); then
 fi
 
 
-# set service name and backup directory
-SERVICE_NAME=${1,,}
-if [[ -z ${BACKUP_DIR+x} ]]; then
-    BACKUP_DIR=${PROG_DIR_ABS}/../init/${SERVICE_NAME}/backup_volumes
-fi
-
-
 # init volumes
 vol_count=0
-for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
-    service_owner=$(cat $VOLUMES_YAML_FILE | shyaml get-value "volumes.${key}.labels.${key}\.service_owner")
-    vol_name=$(cat $VOLUMES_YAML_FILE | shyaml get-value volumes.${key}.name)
-    if [[ "$service_owner" = "$SERVICE_NAME" ]]; then
-	echo "    -> ${vol_name}..."
-	$BACKUP ${vol_name} ${BACKUP_DIR}/${vol_name}_$(date +"%Y%m%d%H%M%S").tar.gz
-	#((vol_count++)) # produces error in combination with set -e
-	let "vol_count=vol_count+1"
-    fi
-done
-
-
-if [[ "$vol_count" -lt 1 ]]; then
-    echo "Warning: service has no volumes to back up"
+if [[ $(cat $VOLUMES_YAML_FILE | shyaml keys | grep volumes | wc -l) -ne 0 ]]; then
+	for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
+		service_owner=$(cat $VOLUMES_YAML_FILE | shyaml get-value "volumes.${key}.labels.${key}\.service_owner")
+		vol_name=$(cat $VOLUMES_YAML_FILE | shyaml get-value volumes.${key}.name)
+		BACKUP_DIR=${PROG_DIR_ABS}/../init/${service_owner}/backup_volumes
+		echo "    -> ${vol_name}..."
+		$BACKUP ${vol_name} ${BACKUP_DIR}/${vol_name}_$(date +"%Y%m%d%H%M%S").tar.gz
+		#((vol_count++)) # produces error in combination with set -e
+		let "vol_count=vol_count+1"
+	done
+else
+    echo "    -> Skipped, no volumes in yaml"
 fi
 
+
 # TODO:
-# set symlink to newest backup
+# * set symlink to newest backup
+# * fix parameter -b to work again
+# * fix usage()
+# * clean up service_owner and use service_name instead or so...
 

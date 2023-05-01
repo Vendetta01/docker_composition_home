@@ -12,19 +12,17 @@ if [[ $PROG_DIR =~ ^[^/] ]]; then
     PROG_DIR_ABS=$(pwd)/$PROG_DIR
 fi
 
-unset BACKUP_DIR
 VOLUMES_YAML_FILE_DEFAULT=${PROG_DIR_ABS}/../docker-compose.base.yml
 
 
 function usage() {
 cat <<EOF
-Usage: $PROG [-h] [-f docker-compose.yml] [-b backup_dir] service_name
+Usage: $PROG [-h] [-b backup_dir] docker-compose.yml
 Initialize volumes of the given service.
  
   Options:
     -h             print this help message.
     -f file_path   path to docker-compose.yml with volume definitions.
-    -b backup_dir  path to backup directory.
 EOF
 }
 
@@ -32,33 +30,24 @@ EOF
 # parse command line options
 while getopts ":hf:b:" OPT; do
     case "${OPT}" in
-	h)
-	    usage
-	    exit
-	    ;;
-	f)
-	    VOLUMES_YAML_FILE=$OPTARG
-	    ;;
-	b)
-	    BACKUP_DIR=$OPTARG
-	    ;;
-	:)
-	    echo "Missing option argument for -$OPTARG" >&2
-	    exit 1
-	    ;;
-	*)
-	    echo "Unknown option: -$OPTARG" >&2
-	    usage
-	    exit 1
-	    ;;
+    h)
+        usage
+        exit
+        ;;
+    b)
+        BACKUP_DIR=$OPTARG
+        ;;
+    :)
+        echo "Missing option argument for -$OPTARG" >&2
+        exit 1
+        ;;
+    *)
+        echo "Unknown option: -$OPTARG" >&2
+        usage
+        exit 1
+        ;;
     esac
 done
-
-
-# set default volumes yaml file
-if [[ -z ${VOLUMES_YAML_FILE+x} ]]; then
-    VOLUMES_YAML_FILE=$VOLUMES_YAML_FILE_DEFAULT
-fi
 
 
 # get positional arguments
@@ -69,36 +58,34 @@ if (($# == 0)); then
 fi
 
 
-# set service name and backup directory
-SERVICE_NAME=${1,,}
-if [[ -z ${BACKUP_DIR+x} ]]; then
-    BACKUP_DIR=${PROG_DIR_ABS}/../init/${SERVICE_NAME}/backup_volumes
-fi
+# set service name
+VOLUMES_YAML_FILE=$1
 
+
+# TODO: backup_dir parameter does not work yet, do we need it???
+# TODO: Update usage()
 
 # init volumes
 vol_count=0
-for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
-    vol_name=$(cat $VOLUMES_YAML_FILE | \
-	shyaml get-value volumes.${key}.name)
-    vol_owner=$(cat $VOLUMES_YAML_FILE | \
-	shyaml get-value volumes.${key}.labels.${key}\\.service_owner)
-    backup_file_url=${BACKUP_DIR}/${vol_name}_latest.tar.gz
-    if [[ "$vol_owner" == "$SERVICE_NAME" ]]; then
-	if [[ -f "$backup_file_url" ]]; then
-	    echo "    -> ${vol_name}"
-	    #create_volume "${vol_name}"
-	    $RESTORE ${vol_name} ${BACKUP_DIR}/${vol_name}_latest.tar.gz
-	    #((vol_count++)) # sets exit code in combination with set -e
-	    let "vol_count=vol_count+1"
-	else
-	    echo "    -> ${vol_name}: Skipped, ${backup_file_url} not present"
-	fi
-    fi
-done
-
-
-#if [[ "$vol_count" -lt 1 ]]; then
-#    echo "Warning: service has no volumes to initialize"
-#fi
-
+if [[ $(cat $VOLUMES_YAML_FILE | shyaml keys | grep volumes | wc -l) -ne 0 ]]; then
+    for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
+        vol_name=$(cat $VOLUMES_YAML_FILE | \
+            shyaml get-value volumes.${key}.name)
+        vol_owner=$(cat $VOLUMES_YAML_FILE | \
+            shyaml get-value volumes.${key}.labels.${key}\\.service_owner)
+        # set backup dir
+        BACKUP_DIR=${PROG_DIR_ABS}/../init/${vol_owner}/backup_volumes
+        backup_file_url=${BACKUP_DIR}/${vol_name}_latest.tar.gz
+        if [[ -f "$backup_file_url" ]]; then
+            echo "    -> ${vol_name}"
+            #create_volume "${vol_name}"
+            $RESTORE ${vol_name} ${BACKUP_DIR}/${vol_name}_latest.tar.gz
+            #((vol_count++)) # sets exit code in combination with set -e
+            let "vol_count=vol_count+1"
+        else
+            echo "    -> ${vol_name}: Skipped, ${backup_file_url} not present"
+        fi
+    done
+else
+    echo "    -> Skipped, no volumes in yaml"
+fi
