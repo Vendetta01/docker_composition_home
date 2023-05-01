@@ -6,37 +6,6 @@ networks:
             config:
                 - subnet: 172.25.0.0/16
 
-volumes:
-    etcd-data:
-        name: etcd-data
-        labels:
-            # do not init volume, instead init from conf dir
-            etcd-data.service_owner: "" #"etcd"
-    ldap-config:
-        name: ldap-config
-        labels:
-            ldap-config.service_owner: "ldap"
-    ldap-data:
-        name: ldap-data
-        labels:
-            ldap-data.service_owner: "ldap"
-    paperless-media:
-        name: paperless-media
-        labels:
-            paperless-media.service_owner: "paperless"
-    db-data:
-        name: db-data
-        labels:
-            db-data.service_owner: "db"
-    db-admin-data:
-        name: db-admin-data
-        labels:
-            db-admin-data.service_owner: "db-admin"
-    airflow-db-data:
-        name: airflow-db-data
-        labels:
-            airflow-db-data.service_owner: "airflow"
-
 secrets:
     etcd_client_ssl_key:
         file: ./SSLCertificates/local/podewitz/etcd/etcd.podewitz.local.key

@@ -308,3 +308,9 @@ services:
                 aliases:
                     - airflow-init.${DOMAINNAME}
                 ipv4_address: 172.25.0.99
+
+volumes:
+    airflow-db-data:
+        name: airflow-db-data
+        labels:
+            airflow-db-data.service_owner: "airflow"

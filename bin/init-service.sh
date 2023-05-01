@@ -17,7 +17,7 @@ VOLUMES_YAML_FILE_DEFAULT=${PROG_DIR_ABS}/../docker-compose.base.yml
 
 function usage() {
 cat <<EOF
-Usage: $PROG [-h] [-f docker-compose.yml] [-b backup_dir] service_name
+Usage: $PROG [-h] [-b backup_dir] docker-compose.yml
 Initialize volumes of the given service.
  
   Options:
@@ -34,8 +34,8 @@ while getopts ":hf:b:" OPT; do
         usage
         exit
         ;;
-    f)
-        VOLUMES_YAML_FILE=$OPTARG
+    b)
+        BACKUP_DIR=$OPTARG
         ;;
     :)
         echo "Missing option argument for -$OPTARG" >&2
@@ -50,12 +50,6 @@ while getopts ":hf:b:" OPT; do
 done
 
 
-# set default volumes yaml file
-if [[ -z ${VOLUMES_YAML_FILE+x} ]]; then
-    VOLUMES_YAML_FILE=$VOLUMES_YAML_FILE_DEFAULT
-fi
-
-
 # get positional arguments
 shift $((OPTIND - 1))
 if (($# == 0)); then
@@ -65,20 +59,23 @@ fi
 
 
 # set service name
-SERVICE_NAME=${1,,}
+VOLUMES_YAML_FILE=$1
 
+
+# TODO: backup_dir parameter does not work yet, do we need it???
+# TODO: Update usage()
 
 # init volumes
 vol_count=0
-for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
-    vol_name=$(cat $VOLUMES_YAML_FILE | \
-        shyaml get-value volumes.${key}.name)
-    vol_owner=$(cat $VOLUMES_YAML_FILE | \
-        shyaml get-value volumes.${key}.labels.${key}\\.service_owner)
-    # set backup dir
-    BACKUP_DIR=${PROG_DIR_ABS}/../init/${vol_owner}/backup_volumes
-    backup_file_url=${BACKUP_DIR}/${vol_name}_latest.tar.gz
-    if [[ "$vol_owner" == "$SERVICE_NAME" || "$SERVICE_NAME" == "-" ]]; then
+if [[ $(cat $VOLUMES_YAML_FILE | shyaml keys | grep volumes | wc -l) -ne 0 ]]; then
+    for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
+        vol_name=$(cat $VOLUMES_YAML_FILE | \
+            shyaml get-value volumes.${key}.name)
+        vol_owner=$(cat $VOLUMES_YAML_FILE | \
+            shyaml get-value volumes.${key}.labels.${key}\\.service_owner)
+        # set backup dir
+        BACKUP_DIR=${PROG_DIR_ABS}/../init/${vol_owner}/backup_volumes
+        backup_file_url=${BACKUP_DIR}/${vol_name}_latest.tar.gz
         if [[ -f "$backup_file_url" ]]; then
             echo "    -> ${vol_name}"
             #create_volume "${vol_name}"
@@ -88,11 +85,7 @@ for key in $(cat $VOLUMES_YAML_FILE | shyaml keys volumes); do
         else
             echo "    -> ${vol_name}: Skipped, ${backup_file_url} not present"
         fi
-    fi
-done
-
-
-#if [[ "$vol_count" -lt 1 ]]; then
-#    echo "Warning: service has no volumes to initialize"
-#fi
-
+    done
+else
+    echo "    -> Skipped, no volumes in yaml"
+fi

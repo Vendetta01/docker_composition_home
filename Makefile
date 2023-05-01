@@ -40,7 +40,8 @@ $(INIT_SERVICES):
 	@echo "Initializing $(@:init-%=%)..."
 #	start service to properly create volume from config
 	@docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:init-%=%).yml up --no-start
-	@/bin/bash ./bin/init-service.sh -f services/docker-compose.$(@:init-%=%).yml -
+	@docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:init-%=%).yml down
+	@/bin/bash ./bin/init-service.sh services/docker-compose.$(@:init-%=%).yml
 
 $(CLEAN_RUN_SERVICES): clean-run-%: clean-% init-% run-%
 
