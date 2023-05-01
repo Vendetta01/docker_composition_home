@@ -33,7 +33,7 @@ services:
         networks:
             podewitz_local_net:
                 aliases:
-                    - db.${DOMAINNAME}
+                    - db-admin.${DOMAINNAME}
                 ipv4_address: 172.25.0.10
         depends_on:
             - ldap

@@ -57,7 +57,7 @@ services:
             podewitz_local_net:
                 aliases:
                     - paperless.${DOMAINNAME}
-                ipv4_address: 172.25.0.8
+                ipv4_address: 172.25.0.80
         depends_on:
             - reverse-proxy
             - db
