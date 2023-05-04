@@ -46,7 +46,7 @@ $(CLEAN_DEBUG_SERVICES): clean-debug-%: clean-% init-% debug-%
 
 $(BACKUP_SERVICES):
 	@echo "Backing up mounts of service $(@:backup-%=%)..."
-	@/bin/bash ./bin/backup-service.sh -f services/docker-compose.$(@:backup-%=%).yml $(@:backup-%=%)
+	@/bin/bash ./bin/backup-service.sh services/docker-compose.$(@:backup-%=%).yml
 
 
 
