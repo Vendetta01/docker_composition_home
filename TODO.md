@@ -47,3 +47,4 @@
 * [ ] init for specific service should also dependent services as well
 * [ ] refactor init-service.sh and backup-service.sh
 * [ ] move lum to admin package
+* [ ] change openldap from osixia to bitnami

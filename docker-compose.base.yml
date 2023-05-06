@@ -7,10 +7,6 @@ networks:
                 - subnet: 172.25.0.0/16
 
 secrets:
-    etcd_client_ssl_key:
-        file: ./SSLCertificates/local/podewitz/etcd/etcd.podewitz.local.key
-    etcd_client_ssl_crt:
-        file: ./SSLCertificates/local/podewitz/etcd/etcd.podewitz.local.crt
     ldap_ssl_key:
         file: ./SSLCertificates/local/podewitz/ldap/ldap.podewitz.local.key
     ldap_ssl_crt:
@@ -53,6 +49,10 @@ secrets:
         file: ./SSLCertificates/local/podewitz/budget/budget.podewitz.local.key
     budget_ssl_crt:
         file: ./SSLCertificates/local/podewitz/budget/budget.podewitz.local.crt
+    home-assistant_ssl_key:
+        file: ./SSLCertificates/local/podewitz/home-assistant/home-assistant.podewitz.local.key
+    home-assistant_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/home-assistant/home-assistant.podewitz.local.crt
 
     db_admin_pw:
         file: ./init/db/config/db_admin_pw

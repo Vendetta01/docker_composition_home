@@ -15,10 +15,6 @@ services:
         volumes:
             - db-admin-data:/var/lib/pgadmin
         secrets:
-            - source: etcd_client_ssl_key
-              target: /etc/ssl/etcd_client.key
-            - source: etcd_client_ssl_crt
-              target: /etc/ssl/etcd_client.crt
             - source: root_ca_crt
               target: /etc/ssl/root_ca.crt
         env_file:
@@ -39,7 +35,6 @@ services:
             - ldap
             - reverse-proxy
             - db
-
 
 
     ldap-admin:
