@@ -1,0 +1,49 @@
+version: '3.4'
+
+services:
+    home-assistant:
+        image: ghcr.io/home-assistant/home-assistant:stable
+        #build: ./metabase-docker
+        container_name: home-assistant
+        hostname: home-assistant.${DOMAINNAME}
+        restart: unless-stopped
+        # healthcheck:
+        #     test: ["CMD", "curl" , "--cacert", "/etc/ssl/root_ca.crt", "-f", "https://metabase.podewitz.local:443"]
+        #     interval: 30s
+        #     timeout: 10s
+        #     retries: 5
+        expose:
+            - 8123
+        # ports:
+        #     - 8123:8123
+        secrets:
+            - source: root_ca_crt
+              target: /etc/ssl/root_ca.crt
+        env_file:
+            - docker-compose.base.env
+        # environment:
+        #     - VIRTUAL_HOST=home-assistant.${DOMAINNAME}
+        #     - VIRTUAL_PORT=8123
+        #     - VIRTUAL_ICON=analytics
+        #     - SERVER_HOSTNAME=home-assistant.${DOMAINNAME}
+        privileged: true
+        volumes:
+            - home-assistant-config:/config
+            - /etc/localtime:/etc/localtime:ro
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.home-assistant.rule=Host(`home-assistant.${DOMAINNAME}`)"
+            - "traefik.http.routers.home-assistant.tls=true"
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - home-assistant.${DOMAINNAME}
+                ipv4_address: 172.25.0.24
+        depends_on:
+            - reverse-proxy
+
+volumes:
+    home-assistant-config:
+        name: home-assistant-config
+        labels:
+            home-assistant-config.service_owner: "home-assistant"

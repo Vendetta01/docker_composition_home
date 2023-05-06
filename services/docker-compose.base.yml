@@ -64,6 +64,10 @@ services:
               target: /etc/traefik/certs/budget.key
             - source: budget_ssl_crt
               target: /etc/traefik/certs/budget.crt
+            - source: home-assistant_ssl_key
+              target: /etc/traefik/certs/home-assistant.key
+            - source: home-assistant_ssl_crt
+              target: /etc/traefik/certs/home-assistant.crt
 
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro

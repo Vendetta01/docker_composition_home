@@ -1,5 +1,5 @@
 
-SERVICES := base admin paperless budget metabase
+SERVICES := base admin paperless budget metabase home-assistant
 
 
 RUN_SERVICES := $(SERVICES:%=run-%)
@@ -72,3 +72,7 @@ clean-run-all: clean-all init-all run-all
 clean-debug-all: clean-all init-all debug-all
 
 backup-all: $(BACKUP_SERVICES)
+
+check-config:
+	@echo "Checking configuration yamls..."
+	docker-compose $(COMPOSE_FILES_ALL) config

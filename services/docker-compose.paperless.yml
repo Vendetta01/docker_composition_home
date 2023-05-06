@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
     paperless:
-        image: jonaswinkler/paperless-ng:${DOCKER_PAPERLESS_VERSION}
+        image: ghcr.io/paperless-ngx/paperless-ngx:${DOCKER_PAPERLESS_VERSION}
         #build: ./paperless-docker
         container_name: paperless
         hostname: paperless.${DOMAINNAME}
@@ -10,7 +10,7 @@ services:
         #ports:
         #    - 8000:8000
         healthcheck:
-            test: ["CMD", "curl" , "-f", "http://localhost:8000"]
+            test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000"]
             interval: 30s
             timeout: 10s
             retries: 5
@@ -47,6 +47,7 @@ services:
             - PAPERLESS_TIME_ZONE=Europe/Berlin
             - PAPERLESS_OCR_LANGUAGES=deu eng spa
             - PAPERLESS_COR_LANGUAGE=deu
+            - PAPERLESS_URL=https://paperless.${DOMAINNAME}
             - USERMAP_UID=1000
             - USERMAP_GID=1000
         labels:
@@ -66,7 +67,7 @@ services:
             - paperless-tika
 
     paperless-broker:
-        image: redis:${DOCKER_PAPERLESS_REDIS_VERSION}
+        image: docker.io/library/redis:${DOCKER_PAPERLESS_REDIS_VERSION}
         container_name: paperless-broker
         hostname: paperless-broker.${DOMAINNAME}
         restart: unless-stopped
@@ -77,12 +78,16 @@ services:
               ipv4_address: 172.25.0.81
 
     paperless-gotenberg:
-        image: thecodingmachine/gotenberg:${DOCKER_PAPERLESS_GOTENBERG_VERSION}
+        image: docker.io/gotenberg/gotenberg:${DOCKER_PAPERLESS_GOTENBERG_VERSION}
         container_name: paperless-gotenberg
         hostname: paperless-gotenberg.${DOMAINNAME}
         restart: unless-stopped
-        environment:
-            DISABLE_GOOGLE_CHROME: 1
+        # The gotenberg chromium route is used to convert .eml files. We do not
+        # want to allow external content like tracking pixels or even javascript.
+        command:
+            - "gotenberg"
+            - "--chromium-disable-javascript=true"
+            - "--chromium-allow-list=file:///tmp/.*"
         networks:
           podewitz_local_net:
               aliases:
