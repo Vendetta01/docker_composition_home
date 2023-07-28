@@ -14,6 +14,9 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    volumes:
+      - /mnt/hdd/docker/docker_composition_home/data/simple-expenses/logs:/data/logs
+      - /mnt/hdd/docker/docker_composition_home/data/simple-expenses/input:/data/input
     env_file:
       - docker-compose.base.env
     environment:
@@ -24,6 +27,7 @@ services:
       - SIMPLE_EXP_DB__HOST=db.podewitz.local
       - SIMPLE_EXP_DB__PORT=5432
       - "SIMPLE_EXP_SECRET_KEY=y2=2k%43!^jv_eecf*)e_3!psaz693q1syeq_6%4jm#c63-btl"
+      - 'SIMPLE_EXP_ALLOWED_HOSTS=["localhost", "simple-expenses.${DOMAINNAME}"]'
       - SIMPLE_EXP_DEBUG=true
       - SIMPLE_EXP_LANGUAGE_CODE=de-de
       - SIMPLE_EXP_TIME_ZONE=Europe/Berlin
