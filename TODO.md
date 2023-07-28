@@ -1,5 +1,6 @@
 # TODO
 
+* [ ] Add check that the smae ip address is not set twice (use make check and yaml parsing of complete config)
 * [ ] How to resolve domain names (eg. ldap.podewitz.local) in local network so that it is routed to baernas (use dnsmasq-docker) -> dnsmasq-docker as primary dns in router
 * [X] Include paperless in docker-compose.yml
 * [X] convert paperless to use real webserver (nginx/gunicorn)
