@@ -37,3 +37,7 @@
 [[tls.certificates]]
     certFile = "/etc/traefik/certs/home-assistant.crt"
     keyFile = "/etc/traefik/certs/home-assistant.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/simple-expenses.crt"
+    keyFile = "/etc/traefik/certs/simple-expenses.key"

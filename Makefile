@@ -1,5 +1,5 @@
 
-SERVICES := base admin paperless budget metabase home-assistant
+SERVICES := base admin paperless budget metabase home-assistant simple-expenses
 
 
 RUN_SERVICES := $(SERVICES:%=run-%)

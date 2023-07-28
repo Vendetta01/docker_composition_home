@@ -1,0 +1,42 @@
+version: '3.4'
+
+services:
+  simple-expenses:
+    image: npodewitz/simple-expenses:${DOCKER_SIMPLE_EXPENSES_VERSION}
+    #build: ./backend
+    container_name: simple-expenses
+    hostname: simple-expenses.${DOMAINNAME}
+    restart: unless-stopped
+    expose:
+      - 8000
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    env_file:
+      - docker-compose.base.env
+    environment:
+      - SIMPLE_EXP_DB__ENGINE=postgres
+      - SIMPLE_EXP_DB__NAME=simple-expenses-db
+      - SIMPLE_EXP_DB__USER=simple-expenses
+      - SIMPLE_EXP_DB__PASSWORD=ypqmt4ffp3
+      - SIMPLE_EXP_DB__HOST=db.podewitz.local
+      - SIMPLE_EXP_DB__PORT=5432
+      - "SIMPLE_EXP_SECRET_KEY=y2=2k%43!^jv_eecf*)e_3!psaz693q1syeq_6%4jm#c63-btl"
+      - SIMPLE_EXP_DEBUG=true
+      - SIMPLE_EXP_LANGUAGE_CODE=de-de
+      - SIMPLE_EXP_TIME_ZONE=Europe/Berlin
+      - SIMPLE_EXP_STATIC_ROOT=/app/static
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.simple-expenses.rule=Host(`simple-expenses.${DOMAINNAME}`)"
+      - "traefik.http.routers.simple-expenses.tls=true"
+    networks:
+      podewitz_local_net:
+        aliases:
+          - simple-expenses.${DOMAINNAME}
+        ipv4_address: 172.25.0.25
+    depends_on:
+      - reverse-proxy
+      - db
