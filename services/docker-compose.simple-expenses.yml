@@ -32,6 +32,7 @@ services:
       - SIMPLE_EXP_LANGUAGE_CODE=de-de
       - SIMPLE_EXP_TIME_ZONE=Europe/Berlin
       - SIMPLE_EXP_STATIC_ROOT=/app/static
+      - 'SIMPLE_EXP_CSRF_TRUSTED_ORIGINS=["https://simple-expenses.${DOMAINNAME}"]'
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.simple-expenses.rule=Host(`simple-expenses.${DOMAINNAME}`)"
