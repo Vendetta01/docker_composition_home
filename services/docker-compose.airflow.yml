@@ -107,7 +107,7 @@ services:
                     "CMD",
                     "curl",
                     "--fail",
-                    "http://172.25.0.9:8080/health"
+                    "http://172.25.0.90:8080/health"
                 ]
             interval: 10s
             timeout: 10s
