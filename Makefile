@@ -1,5 +1,5 @@
 
-SERVICES := base admin paperless budget metabase home-assistant simple-expenses
+SERVICES := base admin paperless budget metabase home-assistant simple-expenses airflow
 
 
 RUN_SERVICES := $(SERVICES:%=run-%)
@@ -20,24 +20,24 @@ COMPOSE_FILES_ALL := $(COMPOSE_FILES_BASE) $(SERVICES:%=-f services/docker-compo
 
 $(RUN_SERVICES):
 	@echo "Running $(@:run-%=%)..."
-	docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:run-%=%).yml up -d
+	docker compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:run-%=%).yml up -d
 
 $(RUN_SERVICES_DEBUG):
 	@echo "Debugging $(@:debug-%=%)..."
-	docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:debug-%=%).yml up
+	docker compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:debug-%=%).yml up
 
 $(STOP_SERVICES):
-	-docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:stop-%=%).yml down
+	-docker compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:stop-%=%).yml down
 
 $(CLEAN_SERVICES):
 	@echo "Cleaning $(@:clean-%=%)..."
-	-docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:clean-%=%).yml down -v
+	-docker compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:clean-%=%).yml down -v
 
 $(INIT_SERVICES):
 	@echo "Initializing $(@:init-%=%)..."
 #	start service to properly create volume from config
-	@docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:init-%=%).yml up --no-start
-	@docker-compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:init-%=%).yml down
+	@docker compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:init-%=%).yml up --no-start
+	@docker compose $(COMPOSE_FILES_BASE) -f services/docker-compose.$(@:init-%=%).yml down
 	@/bin/bash ./bin/init-service.sh services/docker-compose.$(@:init-%=%).yml
 
 $(CLEAN_RUN_SERVICES): clean-run-%: clean-% init-% run-%
@@ -51,21 +51,21 @@ $(BACKUP_SERVICES):
 
 
 stop-all:
-	-docker-compose $(COMPOSE_FILES_ALL) down
+	-docker compose $(COMPOSE_FILES_ALL) down
 
 clean-all:
 	@echo "Cleaning all services..."
-	-docker-compose $(COMPOSE_FILES_ALL) down -v --remove-orphans
+	-docker compose $(COMPOSE_FILES_ALL) down -v --remove-orphans
 
 init-all: $(INIT_SERVICES)
 
 run-all:
 	@echo "Running all services..."
-	docker-compose $(COMPOSE_FILES_ALL) up -d
+	docker compose $(COMPOSE_FILES_ALL) up -d
 
 debug-all:
 	@echo "Debugging all services..."
-	docker-compose $(COMPOSE_FILES_ALL) up
+	docker compose $(COMPOSE_FILES_ALL) up
 
 clean-run-all: clean-all init-all run-all
 
@@ -75,4 +75,4 @@ backup-all: $(BACKUP_SERVICES)
 
 check-config:
 	@echo "Checking configuration yamls..."
-	docker-compose $(COMPOSE_FILES_ALL) config
+	docker compose $(COMPOSE_FILES_ALL) config

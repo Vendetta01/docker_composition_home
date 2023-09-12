@@ -41,7 +41,7 @@
 #
 # Feel free to modify this file to suit your needs.
 ---
-version: '3.4'
+version: '3.8'
 
 x-airflow-common:
     # In order to add custom dependencies or upgrade provider packages you can use your extended image.
@@ -81,7 +81,8 @@ x-airflow-common:
         - ./data/airflow/logs:/opt/airflow/logs
         - ./data/airflow/plugins:/opt/airflow/plugins
         - ./data/airflow/storage/:/storage/
-    user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-0}"
+        - /var/run/docker.sock:/var/run/docker.sock
+    #user: "${AIRFLOW_UID:-50000}:0"
     secrets:
         - airflow_fernet_key
     depends_on:
