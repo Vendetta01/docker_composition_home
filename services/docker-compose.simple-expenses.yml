@@ -15,8 +15,8 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - /mnt/hdd/docker/docker_composition_home/data/simple-expenses/logs:/data/logs
-      - /mnt/hdd/docker/docker_composition_home/data/simple-expenses/input:/data/input
+      - /mnt/hdd/docker/docker_composition_home/data/storage/simple-expenses/logs:/data/logs
+      - /mnt/hdd/docker/docker_composition_home/data/storage/simple-expenses/input:/data/input
     env_file:
       - docker-compose.base.env
     environment:

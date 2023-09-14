@@ -80,7 +80,7 @@ x-airflow-common:
         - ./data/airflow/dags:/opt/airflow/dags
         - ./data/airflow/logs:/opt/airflow/logs
         - ./data/airflow/plugins:/opt/airflow/plugins
-        - ./data/airflow/storage/:/storage/
+        - ./data/storage/:/storage/
         - /var/run/docker.sock:/var/run/docker.sock
     #user: "${AIRFLOW_UID:-50000}:0"
     secrets:
