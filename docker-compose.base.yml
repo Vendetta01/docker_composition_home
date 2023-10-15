@@ -62,8 +62,10 @@ secrets:
         file: ./init/db/config/db_admin_pw
     airflow_fernet_key:
         file: ./init/airflow/config/fernet_key
-    
+
     paperless_secret_key:
         file: ./init/paperless/config/secret_key
+    paperless_passphrase:
+        file: ./init/paperless/config/passphrase
     paperless_db_pw:
         file: ./init/paperless/config/db_pw

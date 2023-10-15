@@ -11,7 +11,7 @@ CLEAN_DEBUG_SERVICES := $(SERVICES:%=clean-debug-%)
 INIT_SERVICES := $(SERVICES:%=init-%)
 BUILD_SERVICES := $(SERVICES:%=build-%)
 BACKUP_SERVICES := $(SERVICES:%=backup-%)
-COMPOSE_FILES_BASE := -f docker-compose.base.yml -f services/docker-compose.base.yml
+COMPOSE_FILES_BASE := -f docker-compose.base.yml
 COMPOSE_FILES_ALL := $(COMPOSE_FILES_BASE) $(SERVICES:%=-f services/docker-compose.%.yml)
 
 .PHONY: $(RUN_SERVICES) $(RUN_SERVICES_DEBUG) $(STOP_SERVICES) $(CLEAN_SERVICES) \

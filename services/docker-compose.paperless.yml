@@ -93,4 +93,3 @@ services:
               aliases:
                   - paperless-db.${DOMAINNAME}
               ipv4_address: 172.25.0.82
-
