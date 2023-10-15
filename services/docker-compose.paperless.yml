@@ -49,6 +49,7 @@ services:
             - PAPERLESS_TASK_WORKERS=1
             - PAPERLESS_THREADS_PER_WORKER=2
             - PAPERLESS_TRAIN_TASK_CRON=5 0 */1 * *
+            - PAPERLESS_PASSPHRASE_FILE=/run/secret/paperless_passphrase
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.paperless.rule=Host(`paperless.${DOMAINNAME}`)"
@@ -59,7 +60,6 @@ services:
                     - paperless.${DOMAINNAME}
                 ipv4_address: 172.25.0.80
         depends_on:
-            - reverse-proxy
             - paperless-db
             - paperless-broker
 
@@ -82,10 +82,12 @@ services:
         restart: unless-stopped
         volumes:
             - /mnt/hdd/paperless_data/db/:/var/lib/postgresql/data
+        secrets:
+            - paperless_db_pw
         environment:
             POSTGRES_DB: paperless
             POSTGRES_USER: paperless
-            POSTGRES_PASSWORD: paperless
+            POSTGRES_PASSWORD_FILE: /run/secrets/paperless_db_pw
         networks:
           podewitz_local_net:
               aliases:
