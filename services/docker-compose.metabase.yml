@@ -37,8 +37,4 @@ services:
                 aliases:
                     - metabase.${DOMAINNAME}
                 ipv4_address: 172.25.0.23
-        depends_on:
-            - ldap
-            - reverse-proxy
-            - db
 

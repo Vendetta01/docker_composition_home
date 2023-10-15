@@ -39,6 +39,3 @@ services:
         aliases:
           - budget.${DOMAINNAME}
         ipv4_address: 172.25.0.20
-    depends_on:
-      - reverse-proxy
-      - db

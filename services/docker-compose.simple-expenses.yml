@@ -42,6 +42,3 @@ services:
         aliases:
           - simple-expenses.${DOMAINNAME}
         ipv4_address: 172.25.0.25
-    depends_on:
-      - reverse-proxy
-      - db
