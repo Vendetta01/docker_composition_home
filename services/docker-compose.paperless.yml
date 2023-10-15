@@ -15,16 +15,10 @@ services:
             timeout: 10s
             retries: 5
         volumes:
-            #- paperless-data:/usr/src/paperless/data
-            - paperless-media:/usr/src/paperless/media
+            - /mnt/hdd/paperless_data/data:/usr/src/paperless/data
+            - /mnt/hdd/paperless_data/media:/usr/src/paperless/media
             - /mnt/hdd/paperless_data/consume:/usr/src/paperless/consume
             - /mnt/hdd/paperless_data/export:/usr/src/paperless/export
-            # Likewise, you can add a local path to mount a directory for
-            # exporting. This is not strictly needed for paperless to
-            # function, only if you're exporting your files: uncomment
-            # it and fill in a local path if you know you're going to
-            # want to export your documents.
-            # - /path/to/another/arbitrary/place:/export
         secrets:
             - paperless_secret_key
             - paperless_db_pw
@@ -87,7 +81,7 @@ services:
         hostname: paperless-db.${DOMAINNAME}
         restart: unless-stopped
         volumes:
-            - paperless-db-data:/var/lib/postgresql/dat
+            - /mnt/hdd/paperless_data/db/:/var/lib/postgresql/data
         environment:
             POSTGRES_DB: paperless
             POSTGRES_USER: paperless
@@ -98,17 +92,3 @@ services:
                   - paperless-db.${DOMAINNAME}
               ipv4_address: 172.25.0.82
 
-
-volumes:
-    paperless-media:
-        name: paperless-media
-        labels:
-            paperless-media.service_owner: "paperless"
-    paperless-data:
-        name: paperless-data
-        labels:
-            paperless-data.service_owner: "paperless"
-    paperless-db-data:
-        name: paperless-db-data
-        labels:
-            paperless-data.service_owner: "paperless"
