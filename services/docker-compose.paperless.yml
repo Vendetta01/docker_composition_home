@@ -9,8 +9,6 @@ services:
         restart: unless-stopped
         expose:
             - 8000
-        #ports:
-        #    - 8000:8000
         healthcheck:
             test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000"]
             interval: 30s
@@ -27,6 +25,9 @@ services:
             # it and fill in a local path if you know you're going to
             # want to export your documents.
             # - /path/to/another/arbitrary/place:/export
+        secrets:
+            - paperless_secret_key
+            - paperless_db_pw
         env_file:
             - docker-compose.base.env
         #env_file:
@@ -41,16 +42,16 @@ services:
             - PAPERLESS_DBHOST=paperless-db
             - PAPERLESS_DBNAME=paperless
             - PAPERLESS_DBUSER=paperless
-            - PAPERLESS_DBPASS=paperless
+            - PAPERLESS_DBPASS_FILE=/run/secrets/paperless_db_pw
             - PAPERLESS_TIME_ZONE=Europe/Berlin
             - PAPERLESS_OCR_LANGUAGES=deu eng spa
-            - PAPERLESS_OCR_LANGUAGE=deu+eng
+            - PAPERLESS_OCR_LANGUAGE=deu
             - PAPERLESS_URL=https://paperless.${DOMAINNAME}
             - USERMAP_UID=1000
             - USERMAP_GID=1000
             #- PAPERLESS_TRASH_DIR=...
-            #- PAPERLESS_FILENAME_FORMAT={correspondent}/{created}_{title}
-            #- "PAPERLESS_SECRET_KEY=pmv9csxktw-+vqef(a=n0ldpi5xxfa(8w*afz@0mq_^hb!g5th"
+            - PAPERLESS_FILENAME_FORMAT={correspondent}/{created}_{title}
+            - PAPERLESS_SECRET_KEY_FILE=/run/secrets/paperless_secret_key
             - PAPERLESS_TASK_WORKERS=1
             - PAPERLESS_THREADS_PER_WORKER=2
             - PAPERLESS_TRAIN_TASK_CRON=5 0 */1 * *
