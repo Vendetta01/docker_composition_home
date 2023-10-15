@@ -49,7 +49,7 @@ services:
             - PAPERLESS_TASK_WORKERS=1
             - PAPERLESS_THREADS_PER_WORKER=2
             - PAPERLESS_TRAIN_TASK_CRON=5 0 */1 * *
-            - PAPERLESS_PASSPHRASE_FILE=/run/secret/paperless_passphrase
+            - PAPERLESS_PASSPHRASE_FILE=/run/secrets/paperless_passphrase
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.paperless.rule=Host(`paperless.${DOMAINNAME}`)"
