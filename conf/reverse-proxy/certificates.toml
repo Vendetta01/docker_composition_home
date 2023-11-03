@@ -41,3 +41,7 @@
 [[tls.certificates]]
     certFile = "/etc/traefik/certs/simple-expenses.crt"
     keyFile = "/etc/traefik/certs/simple-expenses.key"
+
+[[tls.certificates]]
+    certFile = "/etc/traefik/certs/gitea.crt"
+    keyFile = "/etc/traefik/certs/gitea.key"
