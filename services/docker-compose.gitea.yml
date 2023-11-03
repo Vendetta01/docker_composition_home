@@ -1,0 +1,89 @@
+version: "3.8"
+
+services:
+    gitea:
+        image: gitea/gitea:1.20.5
+        container_name: gitea
+        hostname: gitea.${DOMAINNAME}
+        restart: unless-stopped
+        expose:
+            - 3000
+            - 22
+        # healthcheck:
+        #   test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
+        #   interval: 30s
+        #   timeout: 10s
+        #   retries: 5
+        volumes:
+            - ./data/gitea/data:/data
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
+        secrets:
+            - gitea_db_pw
+            - gitea_secret_key
+            - gitea_internal_token
+        env_file:
+            - docker-compose.base.env
+        environment:
+            - USER_UID=1000
+            - USER_GID=1000
+            - GITEA__database__DB_TYPE=postgres
+            - GITEA__database__HOST=gitea-db:5432
+            - GITEA__database__NAME=gitea
+            - GITEA__database__USER=gitea
+            - GITEA__database__PASSWD__FILE=/run/secrets/gitea_db_pw
+            - GITEA__actions__ENABLED=true
+            - GITEA__security__SECRET_KEY__FILE=/run/secrets/gitea_secret_key
+            - GITEA__security__INTERNAL_TOKEN__FILE=/run/secrets/gitea_internal_token
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.simple-expenses.rule=Host(`gitea.${DOMAINNAME}`)"
+            - "traefik.http.routers.simple-expenses.tls=true"
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - gitea.${DOMAINNAME}
+                ipv4_address: 172.25.0.70
+        depends_on:
+            - gitea-db
+
+
+    gitea-db:
+        image: postgres:14
+        container_name: gitea-db
+        hostname: gitea-db.${DOMAINNAME}
+        restart: unless-stopped
+        volumes:
+            - ./data/gitea/postgres:/var/lib/postgresql/data
+        secrets:
+            - gitea_db_pw
+        environment:
+            - POSTGRES_USER=gitea
+            - POSTGRES_PASSWORD_FILE=/run/secrets/gitea_db_pw
+            - POSTGRES_DB=gitea
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - gitea-db.${DOMAINNAME}
+                ipv4_address: 172.25.0.71
+
+    gitea-runner:
+        image: gitea/act_runner:latest
+        container_name: gitea-runner
+        hostname: gitea-runner.${DOMAINNAME}
+        environment:
+            - GITEA_INSTANCE_URL=http://gitea:3000
+            - GITEA_RUNNER_REGISTRATION_TOKEN=jIiViuj75ov6cwGiAgLJhF9w8SG5nJq2QQGAMW0X
+            - CONFIG_FILE=/etc/runner_config.yml
+        restart: unless-stopped
+        volumes:
+            - ./data/gitea/act_runner:/data
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./init/gitea/config/runner_config.yml:/etc/runner_config.yml
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - gitea-runner.${DOMAINNAME}
+                ipv4_address: 172.25.0.72
+        depends_on:
+            - gitea

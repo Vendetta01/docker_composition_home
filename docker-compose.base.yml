@@ -2,6 +2,7 @@ version: '3.8'
 
 networks:
     podewitz_local_net:
+        name: podewitz_local_net
         ipam:
             config:
                 - subnet: 172.25.0.0/16
@@ -57,6 +58,10 @@ secrets:
         file: ./SSLCertificates/local/podewitz/simple-expenses/simple-expenses.podewitz.local.key
     simple-expenses_ssl_crt:
         file: ./SSLCertificates/local/podewitz/simple-expenses/simple-expenses.podewitz.local.crt
+    gitea_ssl_key:
+        file: ./SSLCertificates/local/podewitz/gitea/gitea.podewitz.local.key
+    gitea_ssl_crt:
+        file: ./SSLCertificates/local/podewitz/gitea/gitea.podewitz.local.crt
 
     db_admin_pw:
         file: ./init/db/config/db_admin_pw
@@ -69,3 +74,10 @@ secrets:
         file: ./init/paperless/config/passphrase
     paperless_db_pw:
         file: ./init/paperless/config/db_pw
+    
+    gitea_db_pw:
+        file: ./init/gitea/config/db_pw
+    gitea_secret_key:
+        file: ./init/gitea/config/secret_key
+    gitea_internal_token:
+        file: ./init/gitea/config/internal_token

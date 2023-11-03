@@ -68,6 +68,14 @@ services:
               target: /etc/traefik/certs/home-assistant.key
             - source: home-assistant_ssl_crt
               target: /etc/traefik/certs/home-assistant.crt
+            - source: simple-expenses_ssl_key
+              target: /etc/traefik/certs/simple-expenses.key
+            - source: simple-expenses_ssl_crt
+              target: /etc/traefik/certs/simple-expenses.crt
+            - source: gitea_ssl_key
+              target: /etc/traefik/certs/gitea.key
+            - source: gitea_ssl_crt
+              target: /etc/traefik/certs/gitea.crt
 
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro

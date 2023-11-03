@@ -49,3 +49,4 @@
 * [ ] refactor init-service.sh and backup-service.sh
 * [ ] move lum to admin package
 * [ ] change openldap from osixia to bitnami
+* [ ] Change all volumes to host mounts and create backup strategy for them
