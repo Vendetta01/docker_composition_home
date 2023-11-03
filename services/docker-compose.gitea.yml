@@ -39,6 +39,7 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.gitea.rule=Host(`gitea.${DOMAINNAME}`)"
             - "traefik.http.routers.gitea.tls=true"
+            - "traefik.http.services.gitea.loadbalancer.server.port=3000"
         networks:
             podewitz_local_net:
                 aliases:
