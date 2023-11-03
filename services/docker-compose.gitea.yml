@@ -37,8 +37,8 @@ services:
             - GITEA__security__INTERNAL_TOKEN__FILE=/run/secrets/gitea_internal_token
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.simple-expenses.rule=Host(`gitea.${DOMAINNAME}`)"
-            - "traefik.http.routers.simple-expenses.tls=true"
+            - "traefik.http.routers.gitea.rule=Host(`gitea.${DOMAINNAME}`)"
+            - "traefik.http.routers.gitea.tls=true"
         networks:
             podewitz_local_net:
                 aliases:
