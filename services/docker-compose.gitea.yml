@@ -74,7 +74,7 @@ services:
         hostname: gitea-runner.${DOMAINNAME}
         environment:
             - GITEA_INSTANCE_URL=http://gitea:3000
-            - GITEA_RUNNER_REGISTRATION_TOKEN=jIiViuj75ov6cwGiAgLJhF9w8SG5nJq2QQGAMW0X
+            - GITEA_RUNNER_REGISTRATION_TOKEN=IDoRBu2KmjKDjP8ERtPw9iOvhyTMbtMYIBa0cV8G
             - CONFIG_FILE=/etc/runner_config.yml
         restart: unless-stopped
         volumes:
