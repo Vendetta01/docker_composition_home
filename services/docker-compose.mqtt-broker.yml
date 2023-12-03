@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+    mqtt-broker:
+        image: eclipse-mosquitto:2.0.18
+        container_name: mqtt-broker
+        hostname: mqtt-broker.${DOMAINNAME}
+        restart: unless-stopped
+        volumes:
+            - ./init/mqtt-broker/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+            - ./init/mqtt-broker/config/passwords.txt:/mosquitto/config/passwords.txt
+            - ./data/mqtt-broker/data:/mosquitto/data
+            - ./data/mqtt-broker/log:/mosquitto/log
+        ports:
+            - 1883:1883
+            - 9001:9001
+        env_file:
+            - docker-compose.base.env
+        # labels:
+        #     - "traefik.enable=true"
+        #     - "traefik.http.routers.home-assistant.rule=Host(`home-assistant.${DOMAINNAME}`)"
+        #     - "traefik.http.routers.home-assistant.tls=true"
+        networks:
+            podewitz_local_net:
+                aliases:
+                    - mqtt-broker.${DOMAINNAME}
+                ipv4_address: 172.25.0.25
