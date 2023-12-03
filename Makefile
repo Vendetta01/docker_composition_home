@@ -1,5 +1,5 @@
 
-SERVICES := base admin paperless budget metabase home-assistant simple-expenses airflow gitea
+SERVICES := base admin paperless budget metabase home-assistant simple-expenses airflow gitea identity-provider
 
 
 RUN_SERVICES := $(SERVICES:%=run-%)

@@ -12,6 +12,11 @@ secrets:
         file: ./SSLCertificates/local/podewitz/ldap/ldap.podewitz.local.key
     ldap_ssl_crt:
         file: ./SSLCertificates/local/podewitz/ldap/ldap.podewitz.local.crt
+    ldap_jwt_secret:
+        file: ./init/ldap/config/ldap_jwt_secret
+    ldap_admin_pass:
+        file: ./init/ldap/config/ldap_admin_pass
+
     lum_ssl_key:
         file: ./SSLCertificates/local/podewitz/lum/lum.podewitz.local.key
     lum_ssl_crt:
